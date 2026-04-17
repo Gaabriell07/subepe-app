@@ -7,6 +7,8 @@ import {
   ActivityIndicator,
   StyleSheet,
   Modal,
+  ImageBackground,
+  Dimensions,
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,6 +17,9 @@ import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 
 const TARGET_SELLOS = 30;
+// Relación de aspecto tarjeta bancaria estándar (85.6mm × 53.98mm)
+const CARD_WIDTH  = Dimensions.get('window').width - 8; // 4px cada lado
+const CARD_HEIGHT = Math.round(CARD_WIDTH / 1.586);
 
 function formatFechaCorta(iso) {
   if (!iso) return '';
@@ -104,6 +109,41 @@ export default function DashboardScreen({ navigation }) {
     setAlertaActual(null);
   }, [alertaActual]);
 
+  // ── Botón "Voy a bajar" ────────────────────────────────────────────────────
+  const [bajando, setBajando] = useState(false);
+
+  const handleBajar = useCallback(() => {
+    Alert.alert(
+      '¿Confirmar bajada?',
+      'Se registrará que bajaste del bus. Se descontará la tarifa de tu saldo.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Sí, bajo ahora',
+          onPress: async () => {
+            try {
+              setBajando(true);
+              await api.post('/pasajero/bajar');
+              // Limpiar el viaje activo localmente
+              setViajeActivo(null);
+              setAlertaActual(null);
+              setShowAlertModal(false);
+              if (pollingRef.current) {
+                clearInterval(pollingRef.current);
+                pollingRef.current = null;
+              }
+              Alert.alert('¡Bajada registrada!', '¡Que tengas buen día! 🙂');
+            } catch (err) {
+              Alert.alert('Error', err?.response?.data?.error || 'No se pudo registrar la bajada');
+            } finally {
+              setBajando(false);
+            }
+          },
+        },
+      ]
+    );
+  }, []);
+
   const progreso = useMemo(() => sellos / TARGET_SELLOS, [sellos]);
   const tipoCarnet = usuario?.pasajero?.tipoCarnet || 'NORMAL';
   const carnetLabel = {
@@ -139,21 +179,23 @@ export default function DashboardScreen({ navigation }) {
         </View>
 
         {/* ── Tarjeta de saldo ─────────────────────────────────────────────── */}
-        <View className="mx-5 mt-4 rounded-3xl p-6" style={{ backgroundColor: '#1a3cff' }}>
-          <Text className="text-white text-sm opacity-80 mb-1">Saldo disponible</Text>
-          <Text className="text-white text-4xl font-bold mb-5">S/ {saldo.toFixed(2)}</Text>
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2">
-              <View style={styles.saldoBadge}><Text className="text-white text-xs font-bold">PE</Text></View>
-              <View style={styles.saldoBadge}><Ionicons name="bus" size={16} color="white" /></View>
+        <ImageBackground
+          source={require('../../../images/tarjeta.png')}
+          style={styles.card}
+          imageStyle={{ borderRadius: 24 }}
+          resizeMode="cover"
+        >
+          <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+            <Text style={styles.cardLabel}>Saldo disponible</Text>
+            <Text style={styles.cardSaldo}>S/ {saldo.toFixed(2)}</Text>
+            <View style={{ alignItems: 'flex-end' }}>
+              <TouchableOpacity style={styles.recargarBtn} onPress={() => navigation.navigate('Wallet')}>
+                <Ionicons name="add-circle-outline" size={16} color="#1a3cff" />
+                <Text style={styles.recargarBtnText}>Recargar</Text>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity style={styles.recargarBtn}
-              onPress={() => navigation.navigate('Wallet')}>
-              <Ionicons name="add-circle-outline" size={16} color="#1a3cff" />
-              <Text style={styles.recargarBtnText}>Recargar</Text>
-            </TouchableOpacity>
           </View>
-        </View>
+        </ImageBackground>
 
         {/* ── Accesos rápidos (3 botones) ──────────────────────────────────── */}
         <View className="flex-row px-5 mt-5 gap-3">
@@ -244,6 +286,26 @@ export default function DashboardScreen({ navigation }) {
               <View className="h-2 bg-gray-100 rounded-full mt-2">
                 <View className="h-2 bg-[#1a3cff] rounded-full w-1/2" />
               </View>
+
+              {/* ── Botón Voy a bajar ────────────────────────────────── */}
+              <TouchableOpacity
+                style={[
+                  styles.bajarBtn,
+                  bajando && { opacity: 0.6 },
+                ]}
+                onPress={handleBajar}
+                disabled={bajando}
+                activeOpacity={0.8}
+              >
+                {bajando ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <>
+                    <Ionicons name="hand-left-outline" size={18} color="white" />
+                    <Text style={styles.bajarBtnText}>Voy a bajar</Text>
+                  </>
+                )}
+              </TouchableOpacity>
             </View>
           ) : (
             <View className="bg-white rounded-2xl p-5 shadow-sm flex-row items-center">
@@ -369,13 +431,19 @@ export default function DashboardScreen({ navigation }) {
 const styles = StyleSheet.create({
   carnetBadge:     { flexDirection: 'row', alignItems: 'center', backgroundColor: '#eef0ff', borderRadius: 99, paddingHorizontal: 10, paddingVertical: 5 },
   carnetBadgeText: { color: '#1a3cff', fontSize: 12, fontWeight: '600', marginLeft: 4 },
-  saldoBadge:      { backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 99, padding: 6, marginRight: 6 },
+  // ── Tarjeta de saldo ────────────────────────────────────────────────────
+  card:            { marginHorizontal: 4, marginTop: 16, width: CARD_WIDTH, height: CARD_HEIGHT, padding: 22 },
+  cardLabel:       { color: 'rgba(255,255,255,0.85)', fontSize: 13, marginBottom: 4 },
+  cardSaldo:       { color: 'white', fontSize: 34, fontWeight: '800', marginBottom: 14 },
   recargarBtn:     { flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 10 },
   recargarBtnText: { color: '#1a3cff', fontWeight: 'bold', marginLeft: 4 },
   miniBarra:       { width: '100%', height: 4, backgroundColor: '#f1f5f9', borderRadius: 99, overflow: 'hidden', marginTop: 4 },
   miniBarraFill:   { height: 4, backgroundColor: '#1a3cff', borderRadius: 99 },
   miniGratisBadge: { backgroundColor: '#dcfce7', borderRadius: 99, paddingHorizontal: 6, paddingVertical: 2, marginTop: 4 },
   miniGratisText:  { color: '#16a34a', fontSize: 10, fontWeight: '700' },
+  // ── Botón Voy a bajar ───────────────────────────────────────────────────────
+  bajarBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#16a34a', borderRadius: 14, paddingVertical: 12, marginTop: 14, gap: 8 },
+  bajarBtnText: { color: 'white', fontWeight: 'bold', fontSize: 15 },
   // ── Modal de alerta de paradero ──────────────────────────────────────────────
   modalOverlay:  { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
   modalCard:     { backgroundColor: 'white', borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 32, alignItems: 'center' },

@@ -1,20 +1,15 @@
 import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import ConductorDashboard from '../screens/conductor/DashboardScreen';
-import EscanearQRScreen from '../screens/conductor/EscanearQRScreen';
+import EscanearQRScreen      from '../screens/conductor/EscanearQRScreen';
+import GananciasScreen       from '../screens/conductor/GananciasScreen';
 import ConductorCuentaScreen from '../screens/conductor/CuentaScreen';
-import TurnoActivoScreen from '../screens/conductor/TurnoActivoScreen';
-
 
 const Tab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator();
 
-// ─── Bottom Tabs del conductor ───────────────────────────────────────────────
-function ConductorTabs() {
+export default function ConductorNavigator() {
   const insets = useSafeAreaInsets();
 
   return (
@@ -22,27 +17,43 @@ function ConductorTabs() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#0f172a',
-          borderTopWidth: 0,
-          elevation: 10,
-          height: 60 + insets.bottom,
+          backgroundColor: '#0a0a1a',
+          borderTopWidth: 1,
+          borderTopColor: 'rgba(255,255,255,0.07)',
+          elevation: 20,
+          height: 58 + insets.bottom,
           paddingBottom: insets.bottom + 5,
           paddingTop: 5,
         },
-        tabBarActiveTintColor: '#4f7cff',
-        tabBarInactiveTintColor: 'rgba(255,255,255,0.4)',
+        tabBarActiveTintColor:   '#4f7cff',
+        tabBarInactiveTintColor: 'rgba(255,255,255,0.35)',
       }}
     >
+      {/* ── Tab 1: Escáner QR ─────────────────────────────────────────── */}
       <Tab.Screen
-        name="Home"
-        component={ConductorDashboard}
+        name="Escaner"
+        component={EscanearQRScreen}
         options={{
-          tabBarLabel: 'Inicio',
+          tabBarLabel: 'Escáner',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
+            <MaterialCommunityIcons name="qrcode-scan" size={size} color={color} />
           ),
         }}
       />
+
+      {/* ── Tab 2: Ganancias del día ──────────────────────────────────── */}
+      <Tab.Screen
+        name="Ganancias"
+        component={GananciasScreen}
+        options={{
+          tabBarLabel: 'Ganancias',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="cash-multiple" size={size} color={color} />
+          ),
+        }}
+      />
+
+      {/* ── Tab 3: Cuenta ─────────────────────────────────────────────── */}
       <Tab.Screen
         name="Cuenta"
         component={ConductorCuentaScreen}
@@ -54,24 +65,5 @@ function ConductorTabs() {
         }}
       />
     </Tab.Navigator>
-  );
-}
-
-// ─── Stack del conductor (Tabs + EscanearQR como modal) ──────────────────────
-export default function ConductorNavigator() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="ConductorTabs" component={ConductorTabs} />
-      <Stack.Screen
-        name="EscanearQR"
-        component={EscanearQRScreen}
-        options={{ animation: 'slide_from_bottom' }}
-      />
-      <Stack.Screen
-        name="TurnoActivo"
-        component={TurnoActivoScreen}
-        options={{ animation: 'slide_from_bottom' }}
-      />
-    </Stack.Navigator>
   );
 }

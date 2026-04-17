@@ -8,6 +8,8 @@ import {
   Modal,
   TextInput,
   Alert,
+  ImageBackground,
+  Dimensions,
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,7 +17,9 @@ import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 
 const MONTOS_RAPIDOS = [5, 10, 20, 50];
-const LIMITE_VISTA_PREVIA = 5; // Cuántas transacciones se muestran de inicio
+const LIMITE_VISTA_PREVIA = 5;
+const CARD_WIDTH  = Dimensions.get('window').width - 8; // 4px cada lado
+const CARD_HEIGHT = Math.round(CARD_WIDTH / 1.586);
 
 export default function WalletScreen() {
   const { usuario } = useAuth();
@@ -161,31 +165,26 @@ export default function WalletScreen() {
         </View>
 
         {/* Tarjeta de saldo */}
-        <View className="mx-5 mt-3 bg-[#1a3cff] rounded-3xl p-6">
-          <Text className="text-white text-sm opacity-70 mb-1">Saldo actual</Text>
-          <View className="flex-row items-end mb-6">
-            <Text className="text-white text-4xl font-bold">
+        <ImageBackground
+          source={require('../../../images/tarjeta.png')}
+          style={{ marginHorizontal: 4, marginTop: 12, width: CARD_WIDTH, height: CARD_HEIGHT, padding: 22 }}
+          imageStyle={{ borderRadius: 24 }}
+          resizeMode="cover"
+        >
+          <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+            <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 13, marginBottom: 4 }}>Saldo actual</Text>
+            <Text style={{ color: 'white', fontSize: 36, fontWeight: '800', marginBottom: 16 }}>
               S/ {saldo.toFixed(2)}
             </Text>
-            <Text className="text-white opacity-70 ml-2 mb-1">PEN</Text>
-          </View>
-          <View className="flex-row" style={{ gap: 12 }}>
             <TouchableOpacity
-              className="flex-1 bg-white rounded-2xl py-3 flex-row items-center justify-center"
+              style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: 'white', borderRadius: 16, paddingHorizontal: 20, paddingVertical: 11, alignSelf: 'flex-start' }}
               onPress={() => setModalVisible(true)}
             >
               <Ionicons name="add-circle-outline" size={18} color="#1a3cff" />
-              <Text className="text-[#1a3cff] font-bold ml-2">Recargar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="flex-1 rounded-2xl py-3 flex-row items-center justify-center"
-              style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
-            >
-              <Ionicons name="arrow-forward-circle-outline" size={18} color="white" />
-              <Text className="text-white font-bold ml-2">Transferir</Text>
+              <Text style={{ color: '#1a3cff', fontWeight: 'bold', marginLeft: 6 }}>Recargar</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </ImageBackground>
 
         {/* Historial de transacciones */}
         <View className="px-5 mt-6 mb-6">

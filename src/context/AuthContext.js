@@ -18,11 +18,17 @@ export const AuthProvider = ({ children }) => {
 
     // Escucha cambios de sesión de Supabase (login, logout, refresco de token)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (event, session) => {
+        // TOKEN_REFRESHED: solo actualizar el token guardado, no re-sincronizar
+        // (re-sincronizar causaría un re-render de AppNavigator que rompe el contexto de navegación)
+        if (event === 'TOKEN_REFRESHED' && session?.access_token) {
+          await AsyncStorage.setItem('token', session.access_token);
+          return;
+        }
         if (session?.user) {
           await sincronizarUsuario(session);
         } else {
-          await AsyncStorage.removeItem('usuario');
+          await AsyncStorage.multiRemove(['token', 'usuario']);
           setUsuario(null);
         }
       }
@@ -60,6 +66,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const metadatos = session.user.user_metadata;
 
+      // Guardar el token JWT para que api.js lo use en los headers
+      // (sin esto, el primer request falla con 401 y dispara TOKEN_REFRESHED innecesariamente)
+      if (session?.access_token) {
+        await AsyncStorage.setItem('token', session.access_token);
+      }
+
       const { data } = await api.post('/auth/registro-google', {
         supabaseId: session.user.id,
         email: session.user.email,
@@ -71,7 +83,20 @@ export const AuthProvider = ({ children }) => {
       setUsuario(data.usuario);
       return data.usuario;
     } catch (error) {
-      console.error('Error sincronizando usuario:', error);
+      // Network Error: el backend no está disponible → usar datos cacheados
+      if (error?.code === 'ERR_NETWORK' || error?.message === 'Network Error') {
+        console.warn('Backend no disponible, usando datos cacheados...');
+        try {
+          const usuarioGuardado = await AsyncStorage.getItem('usuario');
+          if (usuarioGuardado) {
+            const usuarioCacheado = JSON.parse(usuarioGuardado);
+            setUsuario(usuarioCacheado);
+            return usuarioCacheado;
+          }
+        } catch (_) {}
+      } else {
+        console.error('Error sincronizando usuario:', error);
+      }
     } finally {
       setCargando(false);
     }
@@ -124,7 +149,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     await supabase.auth.signOut();
-    await AsyncStorage.removeItem('usuario');
+    await AsyncStorage.multiRemove(['token', 'usuario']);
     setUsuario(null);
   };
 

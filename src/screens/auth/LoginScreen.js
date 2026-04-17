@@ -30,7 +30,7 @@ export default function LoginScreen({ navigation }) {
     }
     try {
       setCargando(true);
-      await login(email, password);
+      await login(email.trim(), password);
       // AppNavigator redirige automáticamente según usuario.rol
     } catch (error) {
       Alert.alert('Error', error.message || 'Correo o contraseña incorrectos');
