@@ -29,7 +29,7 @@ export default function ConductorNavigator() {
         tabBarInactiveTintColor: 'rgba(255,255,255,0.35)',
       }}
     >
-      {/* ── Tab 1: Escáner QR ─────────────────────────────────────────── */}
+      {}
       <Tab.Screen
         name="Escaner"
         component={EscanearQRScreen}
@@ -41,7 +41,7 @@ export default function ConductorNavigator() {
         }}
       />
 
-      {/* ── Tab 2: Ganancias del día ──────────────────────────────────── */}
+      {}
       <Tab.Screen
         name="Ganancias"
         component={GananciasScreen}
@@ -53,7 +53,7 @@ export default function ConductorNavigator() {
         }}
       />
 
-      {/* ── Tab 3: Cuenta ─────────────────────────────────────────────── */}
+      {}
       <Tab.Screen
         name="Cuenta"
         component={ConductorCuentaScreen}

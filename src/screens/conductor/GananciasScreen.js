@@ -10,9 +10,6 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useGanancias } from '../../hooks/useGanancias';
 
-// ── Mapa de íconos y colores por tipo de carnet ───────────────────────────────
-// OCP: agregar un nuevo tipo de carnet solo requiere añadir una entrada aquí,
-//      sin modificar los componentes de UI.
 const TIPO_CARNET_META = {
   NORMAL:       { label: 'Normal',        color: '#4f7cff', bg: '#eef0ff', icon: 'person' },
   UNIVERSITARIO:{ label: 'Universitario', color: '#7c3aed', bg: '#f5f3ff', icon: 'school' },
@@ -23,20 +20,13 @@ const TIPO_CARNET_META = {
   DISCAPACITADO:{ label: 'Discapacidad',  color: '#db2777', bg: '#fdf2f8', icon: 'heart' },
 };
 
-// ── Helpers de formato ────────────────────────────────────────────────────────
 const formatSol  = (n) => `S/. ${(n ?? 0).toFixed(2)}`;
 const metaCarnet = (tipo) => TIPO_CARNET_META[tipo] ?? TIPO_CARNET_META.NORMAL;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Componente principal
-// ISP: solo recibe los datos que necesita a través del hook; no conoce nada
-//      sobre cómo se obtienen o de dónde vienen.
-// ─────────────────────────────────────────────────────────────────────────────
 export default function GananciasScreen() {
   const insets = useSafeAreaInsets();
   const { ganancias, cargando, error, recargar } = useGanancias();
 
-  // ── Estado de carga ──────────────────────────────────────────────────────
   if (cargando) {
     return (
       <View
@@ -49,7 +39,6 @@ export default function GananciasScreen() {
     );
   }
 
-  // ── Estado de error ──────────────────────────────────────────────────────
   if (error) {
     return (
       <View
@@ -68,14 +57,13 @@ export default function GananciasScreen() {
     );
   }
 
-  // ── Estado vacío ─────────────────────────────────────────────────────────
   const sinViajes = !ganancias || ganancias.totalViajes === 0;
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f0f2ff', paddingTop: insets.top }}>
       <ScrollView showsVerticalScrollIndicator={false}>
 
-        {/* ── Header con total del día ─────────────────────────────────── */}
+        {}
         <HeaderGanancias
           total={ganancias?.totalHoy ?? 0}
           totalViajes={ganancias?.totalViajes ?? 0}
@@ -86,10 +74,10 @@ export default function GananciasScreen() {
           <EstadoVacio />
         ) : (
           <>
-            {/* ── Desglose por tipo de carnet ──────────────────────────── */}
+            {}
             <SeccionDesglose desglose={ganancias.desglose} />
 
-            {/* ── Últimos viajes del día ────────────────────────────────── */}
+            {}
             <SeccionUltimosViajes viajes={ganancias.ultimosViajes} />
           </>
         )}
@@ -100,14 +88,10 @@ export default function GananciasScreen() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Sub-componentes (SRP: cada uno tiene una única razón para cambiar)
-// ─────────────────────────────────────────────────────────────────────────────
-
 function HeaderGanancias({ total, totalViajes, onRecargar }) {
   return (
     <View className="bg-[#0f172a] px-5 pt-4 pb-10">
-      {/* Título + botón recargar */}
+      {}
       <View className="flex-row justify-between items-center mb-6">
         <Text className="text-white text-2xl font-bold">Ganancias de hoy</Text>
         <TouchableOpacity
@@ -119,7 +103,7 @@ function HeaderGanancias({ total, totalViajes, onRecargar }) {
         </TouchableOpacity>
       </View>
 
-      {/* Monto grande */}
+      {}
       <View className="items-center">
         <Text className="text-white/50 text-sm mb-1 tracking-widest uppercase">Total recaudado</Text>
         <Text
@@ -205,10 +189,10 @@ function FilaViaje({ viaje, borde }) {
       className="flex-row items-center px-4 py-3"
       style={borde ? { borderTopWidth: 1, borderTopColor: '#f3f4f6' } : {}}
     >
-      {/* Hora */}
+      {}
       <Text className="text-xs text-gray-400 w-12 font-mono">{viaje.hora}</Text>
 
-      {/* Ruta */}
+      {}
       <View className="flex-1 mx-3">
         <View className="flex-row items-center">
           <Text className="text-gray-700 text-xs font-medium flex-shrink" numberOfLines={1}>
@@ -229,7 +213,7 @@ function FilaViaje({ viaje, borde }) {
         </View>
       </View>
 
-      {/* Monto */}
+      {}
       <Text className="text-[#4f7cff] font-bold text-sm">{formatSol(viaje.monto)}</Text>
     </View>
   );

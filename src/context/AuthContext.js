@@ -16,11 +16,9 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     cargarSesion();
 
-    // Escucha cambios de sesión de Supabase (login, logout, refresco de token)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        // TOKEN_REFRESHED: solo actualizar el token guardado, no re-sincronizar
-        // (re-sincronizar causaría un re-render de AppNavigator que rompe el contexto de navegación)
+
         if (event === 'TOKEN_REFRESHED' && session?.access_token) {
           await AsyncStorage.setItem('token', session.access_token);
           return;
@@ -39,14 +37,13 @@ export const AuthProvider = ({ children }) => {
 
   const cargarSesion = async () => {
     try {
-      // Supabase refresca el token automáticamente si tiene refresh token guardado
+      
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         await sincronizarUsuario(session);
         return;
       }
 
-      // Fallback: mostrar datos del usuario cacheados mientras se resuelve
       const usuarioGuardado = await AsyncStorage.getItem('usuario');
       if (usuarioGuardado) {
         setUsuario(JSON.parse(usuarioGuardado));
@@ -58,16 +55,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  /**
-   * Sincroniza el usuario de Supabase con el backend (busca o crea el registro en la BD).
-   * Funciona tanto para email/password como para Google OAuth.
-   */
   const sincronizarUsuario = async (session) => {
     try {
       const metadatos = session.user.user_metadata;
 
-      // Guardar el token JWT para que api.js lo use en los headers
-      // (sin esto, el primer request falla con 401 y dispara TOKEN_REFRESHED innecesariamente)
       if (session?.access_token) {
         await AsyncStorage.setItem('token', session.access_token);
       }
@@ -83,7 +74,7 @@ export const AuthProvider = ({ children }) => {
       setUsuario(data.usuario);
       return data.usuario;
     } catch (error) {
-      // Network Error: el backend no está disponible → usar datos cacheados
+      
       if (error?.code === 'ERR_NETWORK' || error?.message === 'Network Error') {
         console.warn('Backend no disponible, usando datos cacheados...');
         try {
@@ -102,13 +93,8 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  /**
-   * Login con email/password — hace signInWithPassword DIRECTAMENTE en el frontend
-   * para que la sesión de Supabase quede guardada localmente.
-   * Así api.js puede obtener el token con getSession() sin necesidad de AsyncStorage.
-   */
   const login = async (email, password) => {
-    // 1. Autenticar directamente con Supabase (guarda la sesión en el cliente)
+    
     const { data: authData, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -116,7 +102,6 @@ export const AuthProvider = ({ children }) => {
 
     if (error) throw new Error(error.message);
 
-    // 2. Sincronizar con nuestro backend para obtener los datos del usuario (rol, etc.)
     const usuarioData = await sincronizarUsuario(authData.session);
     return usuarioData;
   };
@@ -141,7 +126,7 @@ export const AuthProvider = ({ children }) => {
     if (result.type === 'success' && result.url) {
       const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(result.url);
       if (exchangeError) throw exchangeError;
-      // onAuthStateChange detecta la nueva sesión y llama sincronizarUsuario
+      
     } else if (result.type === 'cancel' || result.type === 'dismiss') {
       throw new Error('Login cancelado');
     }

@@ -24,7 +24,6 @@ const TIPO_CARNET_COLOR = {
   DISCAPACITADO: { bg: '#fee2e2', text: '#dc2626' },
 };
 
-// ─── Hook de animación de entrada (fade + slide-up) ───────────────────────────
 function useEntrance(delay = 0) {
   const anim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -41,7 +40,6 @@ function useEntrance(delay = 0) {
   };
 }
 
-// ─── Dot pulsante ─────────────────────────────────────────────────────────────
 function PulseDot() {
   const scale = useRef(new Animated.Value(1)).current;
   useEffect(() => {
@@ -55,7 +53,6 @@ function PulseDot() {
   return <Animated.View style={[styles.turnoDot, { transform: [{ scale }] }]} />;
 }
 
-// ─── DASHBOARD DEL CONDUCTOR ──────────────────────────────────────────────────
 export default function ConductorDashboard({ navigation }) {
   const insets = useSafeAreaInsets();
   const { usuario } = useAuth();
@@ -65,7 +62,6 @@ export default function ConductorDashboard({ navigation }) {
   const [cargando,     setCargando]     = useState(true);
   const [turno,        setTurno]        = useState(null);
 
-  // Animaciones de entrada escalonadas
   const headerStyle = useEntrance(0);
   const avatarScale = useRef(new Animated.Value(0)).current;
   const turnoStyle  = useEntrance(200);
@@ -121,7 +117,7 @@ export default function ConductorDashboard({ navigation }) {
                 {usuario?.nombres?.split(' ')[0] || 'Conductor'}
               </Text>
             </View>
-            {/* Avatar con bounce */}
+            {}
             <Animated.View
               style={{ transform: [{ scale: avatarScale }] }}
               className="w-12 h-12 rounded-full bg-[#1a3cff] items-center justify-center"
@@ -130,7 +126,7 @@ export default function ConductorDashboard({ navigation }) {
             </Animated.View>
           </View>
 
-          {/* Tarjeta de saldo */}
+          {}
           <View className="bg-[#1a3cff] rounded-3xl p-5">
             <Text className="text-white/70 text-sm mb-1">Comisiones acumuladas</Text>
             <Text className="text-white text-4xl font-bold mb-4">
@@ -144,7 +140,7 @@ export default function ConductorDashboard({ navigation }) {
           </View>
         </Animated.View>
 
-        {/* ── Banner de turno ───────────────────────────────────────────────── */}
+        {}
         <Animated.View style={turnoStyle} className="px-5 mb-4">
           {turno?.turnoActivo ? (
             <TouchableOpacity
@@ -179,7 +175,7 @@ export default function ConductorDashboard({ navigation }) {
           )}
         </Animated.View>
 
-        {/* ── Botón escanear QR ─────────────────────────────────────────────── */}
+        {}
         <Animated.View style={qrStyle} className="px-5 mb-6">
           <TouchableOpacity
             className="bg-[#1a3cff] rounded-2xl py-5 flex-row items-center justify-center shadow-sm"
@@ -192,7 +188,7 @@ export default function ConductorDashboard({ navigation }) {
           </TouchableOpacity>
         </Animated.View>
 
-        {/* ── Stats ─────────────────────────────────────────────────────────── */}
+        {}
         <Animated.View style={statsStyle} className="px-5 flex-row mb-6">
           <View className="flex-1 bg-white rounded-2xl p-4 items-center mr-3 shadow-sm">
             <View className="bg-[#eef0ff] rounded-xl p-2 mb-2">
@@ -210,7 +206,7 @@ export default function ConductorDashboard({ navigation }) {
           </View>
         </Animated.View>
 
-        {/* ── Lista de pasajeros ────────────────────────────────────────────── */}
+        {}
         <Animated.View style={listStyle} className="px-5 mb-8">
           <Text className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">
             Pasajeros a bordo

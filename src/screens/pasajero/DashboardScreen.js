@@ -17,8 +17,8 @@ import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 
 const TARGET_SELLOS = 30;
-// Relación de aspecto tarjeta bancaria estándar (85.6mm × 53.98mm)
-const CARD_WIDTH  = Dimensions.get('window').width - 8; // 4px cada lado
+
+const CARD_WIDTH  = Dimensions.get('window').width - 8; 
 const CARD_HEIGHT = Math.round(CARD_WIDTH / 1.586);
 
 function formatFechaCorta(iso) {
@@ -26,7 +26,6 @@ function formatFechaCorta(iso) {
   return new Date(iso).toLocaleDateString('es-PE', { day: '2-digit', month: 'short' });
 }
 
-// ─── DASHBOARD DEL PASAJERO ───────────────────────────────────────────────────
 export default function DashboardScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const { usuario } = useAuth();
@@ -37,8 +36,8 @@ export default function DashboardScreen({ navigation }) {
   const [viajeActivo,  setViajeActivo]  = useState(null);
   const [comunicados,  setComunicados]  = useState([]);
   const [cargando,     setCargando]     = useState(true);
-  // ── Sistema de alertas por paradero ──────────────────────────────────
-  const [alertaActual,   setAlertaActual]   = useState(null); // { tipo, paraderoFin, viajeId }
+  
+  const [alertaActual,   setAlertaActual]   = useState(null); 
   const [showAlertModal, setShowAlertModal] = useState(false);
   const pollingRef = useRef(null);
 
@@ -76,7 +75,6 @@ export default function DashboardScreen({ navigation }) {
 
   useFocusEffect(useCallback(() => { cargarDatos(); }, [cargarDatos]));
 
-  // ── Polling de alertas (sólo cuando hay viaje EN_CURSO) ───────────────────
   useEffect(() => {
     if (!viajeActivo) {
       if (pollingRef.current) {
@@ -94,12 +92,12 @@ export default function DashboardScreen({ navigation }) {
           setAlertaActual({ tipo: data.alerta, paraderoFin: data.paraderoFin, viajeId: data.viajeId });
           setShowAlertModal(true);
         }
-      } catch { /* ignorar errores de red en polling */ }
+      } catch {  }
     };
 
     pollingRef.current = setInterval(poll, 5000);
     return () => { clearInterval(pollingRef.current); pollingRef.current = null; };
-  }, [viajeActivo?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [viajeActivo?.id]); 
 
   const handleDismissAlerta = useCallback(async () => {
     if (alertaActual?.viajeId) {
@@ -109,7 +107,6 @@ export default function DashboardScreen({ navigation }) {
     setAlertaActual(null);
   }, [alertaActual]);
 
-  // ── Botón "Voy a bajar" ────────────────────────────────────────────────────
   const [bajando, setBajando] = useState(false);
 
   const handleBajar = useCallback(() => {
@@ -124,7 +121,7 @@ export default function DashboardScreen({ navigation }) {
             try {
               setBajando(true);
               await api.post('/pasajero/bajar');
-              // Limpiar el viaje activo localmente
+              
               setViajeActivo(null);
               setAlertaActual(null);
               setShowAlertModal(false);
@@ -163,7 +160,7 @@ export default function DashboardScreen({ navigation }) {
     <View className="flex-1 bg-[#f0f2ff]" style={{ paddingTop: insets.top }}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
 
-        {/* ── Header ──────────────────────────────────────────────────────── */}
+        {}
         <View className="px-5 pt-5 pb-2 flex-row items-center justify-between">
           <View>
             <Text className="text-xs text-gray-400 font-semibold tracking-widest uppercase">Bienvenido</Text>
@@ -171,14 +168,14 @@ export default function DashboardScreen({ navigation }) {
               {usuario?.nombres} {usuario?.apellidos}
             </Text>
           </View>
-          {/* Badge de tipo carnet */}
+          {}
           <View style={styles.carnetBadge}>
             <Ionicons name="card-outline" size={13} color="#1a3cff" />
             <Text style={styles.carnetBadgeText}>{carnetLabel}</Text>
           </View>
         </View>
 
-        {/* ── Tarjeta de saldo ─────────────────────────────────────────────── */}
+        {}
         <ImageBackground
           source={require('../../../images/tarjeta.png')}
           style={styles.card}
@@ -197,10 +194,10 @@ export default function DashboardScreen({ navigation }) {
           </View>
         </ImageBackground>
 
-        {/* ── Accesos rápidos (3 botones) ──────────────────────────────────── */}
+        {}
         <View className="flex-row px-5 mt-5 gap-3">
 
-          {/* Generar QR */}
+          {}
           <TouchableOpacity
             className="bg-white rounded-2xl p-4 items-center shadow-sm"
             style={{ flex: 1 }}
@@ -212,7 +209,7 @@ export default function DashboardScreen({ navigation }) {
             <Text className="text-xs text-gray-700 font-semibold text-center">Generar QR</Text>
           </TouchableOpacity>
 
-          {/* Mis Sellos — con contador y progress visual */}
+          {}
           <TouchableOpacity
             className="bg-white rounded-2xl p-4 items-center shadow-sm"
             style={{ flex: 1.4 }}
@@ -222,7 +219,7 @@ export default function DashboardScreen({ navigation }) {
               <Ionicons name="bookmark" size={14} color="#f59e0b" />
               <Text className="text-amber-500 font-bold text-base ml-1">{sellos}/{TARGET_SELLOS}</Text>
             </View>
-            {/* Mini barra */}
+            {}
             <View style={styles.miniBarra}>
               <View style={[styles.miniBarraFill, { width: `${progreso * 100}%` }]} />
             </View>
@@ -234,7 +231,7 @@ export default function DashboardScreen({ navigation }) {
             )}
           </TouchableOpacity>
 
-          {/* Historial */}
+          {}
           <TouchableOpacity
             className="bg-white rounded-2xl p-4 items-center shadow-sm"
             style={{ flex: 1 }}
@@ -247,7 +244,7 @@ export default function DashboardScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {/* ── Viaje actual ─────────────────────────────────────────────────── */}
+        {}
         <View className="px-5 mt-5">
           <View className="flex-row items-center justify-between mb-3">
             <Text className="text-lg font-bold text-gray-900">Viaje actual</Text>
@@ -287,7 +284,7 @@ export default function DashboardScreen({ navigation }) {
                 <View className="h-2 bg-[#1a3cff] rounded-full w-1/2" />
               </View>
 
-              {/* ── Botón Voy a bajar ────────────────────────────────── */}
+              {}
               <TouchableOpacity
                 style={[
                   styles.bajarBtn,
@@ -326,7 +323,7 @@ export default function DashboardScreen({ navigation }) {
           )}
         </View>
 
-        {/* ── Comunicados ──────────────────────────────────────────────────── */}
+        {}
         <View className="px-5 mt-5">
           <View className="flex-row items-center justify-between mb-3">
             <Text className="text-lg font-bold text-gray-900">Comunicados</Text>
@@ -372,7 +369,7 @@ export default function DashboardScreen({ navigation }) {
 
       </ScrollView>
 
-      {/* ── Modal de alerta de paradero ─────────────────────────────── */}
+      {}
       <Modal
         visible={showAlertModal}
         transparent
@@ -427,11 +424,10 @@ export default function DashboardScreen({ navigation }) {
   );
 }
 
-// ─── Estilos ──────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   carnetBadge:     { flexDirection: 'row', alignItems: 'center', backgroundColor: '#eef0ff', borderRadius: 99, paddingHorizontal: 10, paddingVertical: 5 },
   carnetBadgeText: { color: '#1a3cff', fontSize: 12, fontWeight: '600', marginLeft: 4 },
-  // ── Tarjeta de saldo ────────────────────────────────────────────────────
+  
   card:            { marginHorizontal: 4, marginTop: 16, width: CARD_WIDTH, height: CARD_HEIGHT, padding: 22 },
   cardLabel:       { color: 'rgba(255,255,255,0.85)', fontSize: 13, marginBottom: 4 },
   cardSaldo:       { color: 'white', fontSize: 34, fontWeight: '800', marginBottom: 14 },
@@ -441,10 +437,10 @@ const styles = StyleSheet.create({
   miniBarraFill:   { height: 4, backgroundColor: '#1a3cff', borderRadius: 99 },
   miniGratisBadge: { backgroundColor: '#dcfce7', borderRadius: 99, paddingHorizontal: 6, paddingVertical: 2, marginTop: 4 },
   miniGratisText:  { color: '#16a34a', fontSize: 10, fontWeight: '700' },
-  // ── Botón Voy a bajar ───────────────────────────────────────────────────────
+  
   bajarBtn:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#16a34a', borderRadius: 14, paddingVertical: 12, marginTop: 14, gap: 8 },
   bajarBtnText: { color: 'white', fontWeight: 'bold', fontSize: 15 },
-  // ── Modal de alerta de paradero ──────────────────────────────────────────────
+  
   modalOverlay:  { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
   modalCard:     { backgroundColor: 'white', borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 32, alignItems: 'center' },
   modalAmbar:    { borderTopWidth: 5, borderTopColor: '#f59e0b' },

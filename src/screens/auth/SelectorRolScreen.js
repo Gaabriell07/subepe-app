@@ -9,8 +9,6 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// Los conductores son creados exclusivamente por el administrador.
-// Esta pantalla solo permite el registro de PASAJEROS.
 export default function SelectorRolScreen({ navigation }) {
   const insets = useSafeAreaInsets();
 
@@ -23,7 +21,7 @@ export default function SelectorRolScreen({ navigation }) {
         contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 40, flexGrow: 1, justifyContent: 'center' }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Logo */}
+        {}
         <View className="items-center mb-12">
           <Image
             source={require('../../../images/subepeicono.png')}
@@ -36,7 +34,7 @@ export default function SelectorRolScreen({ navigation }) {
           </Text>
         </View>
 
-        {/* Tarjeta Pasajero — única opción */}
+        {}
         <TouchableOpacity
           className="bg-white rounded-3xl p-8 items-center w-full shadow-sm"
           onPress={() => navigation.navigate('Registro', { rol: 'PASAJERO' })}
@@ -54,7 +52,7 @@ export default function SelectorRolScreen({ navigation }) {
           </View>
         </TouchableOpacity>
 
-        {/* Volver al login */}
+        {}
         <TouchableOpacity
           className="flex-row justify-center items-center mt-8"
           onPress={() => navigation.goBack()}
@@ -65,7 +63,7 @@ export default function SelectorRolScreen({ navigation }) {
           </Text>
         </TouchableOpacity>
 
-        {/* Nota informativa para conductores */}
+        {}
         <View className="mt-6 bg-white/70 rounded-2xl px-5 py-4">
           <Text className="text-xs text-gray-400 text-center leading-5">
             🚌 ¿Eres conductor? Tu cuenta es creada por la empresa.{'\n'}

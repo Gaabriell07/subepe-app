@@ -18,7 +18,7 @@ import api from '../../services/api';
 
 const MONTOS_RAPIDOS = [5, 10, 20, 50];
 const LIMITE_VISTA_PREVIA = 5;
-const CARD_WIDTH  = Dimensions.get('window').width - 8; // 4px cada lado
+const CARD_WIDTH  = Dimensions.get('window').width - 8; 
 const CARD_HEIGHT = Math.round(CARD_WIDTH / 1.586);
 
 export default function WalletScreen() {
@@ -42,14 +42,12 @@ export default function WalletScreen() {
         api.get('/pasajero/recargas'),
       ]);
 
-      // Saldo
       if (saldoRes.status === 'fulfilled') {
         setSaldo(saldoRes.value.data.saldo);
       }
 
       const historial = [];
 
-      // Viajes y penalidades
       if (viajesRes.status === 'fulfilled') {
         viajesRes.value.data.forEach((v) => {
           historial.push({
@@ -71,7 +69,6 @@ export default function WalletScreen() {
         });
       }
 
-      // Recargas (si el endpoint ya existe en el backend)
       if (recargasRes.status === 'fulfilled') {
         recargasRes.value.data.forEach((r) => {
           historial.push({
@@ -83,7 +80,6 @@ export default function WalletScreen() {
           });
         });
       }
-      // Si recargasRes.status === 'rejected' (404) simplemente no se muestran recargas
 
       historial.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
       setTransacciones(historial);
@@ -142,7 +138,6 @@ export default function WalletScreen() {
     }
   };
 
-  // Transacciones que se muestran (limitadas o todas)
   const transaccionesVisibles = verTodo
     ? transacciones
     : transacciones.slice(0, LIMITE_VISTA_PREVIA);
@@ -159,12 +154,12 @@ export default function WalletScreen() {
     <View className="flex-1 bg-[#f0f2ff]" style={{ paddingTop: insets.top }}>
       <ScrollView showsVerticalScrollIndicator={false}>
 
-        {/* Header — solo el título, sin avatar */}
+        {}
         <View className="px-5 pt-4 pb-2">
           <Text className="text-2xl font-bold text-[#1a3cff]">Mi Billetera</Text>
         </View>
 
-        {/* Tarjeta de saldo */}
+        {}
         <ImageBackground
           source={require('../../../images/tarjeta.png')}
           style={{ marginHorizontal: 4, marginTop: 12, width: CARD_WIDTH, height: CARD_HEIGHT, padding: 22 }}
@@ -186,7 +181,7 @@ export default function WalletScreen() {
           </View>
         </ImageBackground>
 
-        {/* Historial de transacciones */}
+        {}
         <View className="px-5 mt-6 mb-6">
           <Text className="text-lg font-bold text-gray-900 mb-3">
             Últimas transacciones
@@ -214,7 +209,7 @@ export default function WalletScreen() {
                           : {}
                       }
                     >
-                      {/* Ícono */}
+                      {}
                       <View
                         className="rounded-full w-10 h-10 items-center justify-center mr-3"
                         style={{ backgroundColor: icono.bg }}
@@ -226,7 +221,7 @@ export default function WalletScreen() {
                         />
                       </View>
 
-                      {/* Descripción y fecha */}
+                      {}
                       <View className="flex-1">
                         <Text className="font-semibold text-gray-900 text-sm">
                           {item.descripcion}
@@ -236,7 +231,7 @@ export default function WalletScreen() {
                         </Text>
                       </View>
 
-                      {/* Monto */}
+                      {}
                       <Text
                         className="font-bold"
                         style={{
@@ -274,7 +269,7 @@ export default function WalletScreen() {
         </View>
       </ScrollView>
 
-      {/* Modal de recarga */}
+      {}
       <Modal
         visible={modalVisible}
         transparent
@@ -290,7 +285,7 @@ export default function WalletScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Montos rápidos */}
+            {}
             <Text className="text-sm text-gray-500 mb-3">Monto rápido</Text>
             <View className="flex-row justify-between mb-5">
               {MONTOS_RAPIDOS.map((m) => (
@@ -314,7 +309,7 @@ export default function WalletScreen() {
               ))}
             </View>
 
-            {/* Monto personalizado */}
+            {}
             <Text className="text-sm text-gray-500 mb-2">O ingresa otro monto</Text>
             <View className="flex-row items-center bg-gray-100 rounded-2xl px-4 py-3 mb-6">
               <Text className="text-gray-500 font-bold mr-2">S/</Text>

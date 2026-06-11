@@ -31,7 +31,7 @@ export default function LoginScreen({ navigation }) {
     try {
       setCargando(true);
       await login(email.trim(), password);
-      // AppNavigator redirige automáticamente según usuario.rol
+      
     } catch (error) {
       Alert.alert('Error', error.message || 'Correo o contraseña incorrectos');
     } finally {
@@ -62,7 +62,7 @@ export default function LoginScreen({ navigation }) {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Logo */}
+        {}
         <View className="items-center mb-10">
           <Image
             source={require('../../../images/subepeicono.png')}
@@ -73,7 +73,7 @@ export default function LoginScreen({ navigation }) {
           <Text className="text-base text-gray-500">Bienvenido de vuelta</Text>
         </View>
 
-        {/* Email */}
+        {}
         <Text className="text-sm font-semibold text-gray-700 mb-2">
           Correo electrónico
         </Text>
@@ -91,7 +91,7 @@ export default function LoginScreen({ navigation }) {
           />
         </View>
 
-        {/* Password */}
+        {}
         <Text className="text-sm font-semibold text-gray-700 mb-2">Contraseña</Text>
         <View className="flex-row items-center bg-[#eef0ff] rounded-2xl px-4 mb-2 h-14">
           <Ionicons name="lock-closed-outline" size={20} color="#999" />
@@ -112,14 +112,14 @@ export default function LoginScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {/* Olvidé contraseña */}
-        <TouchableOpacity className="items-end mb-6">
+        {}
+        <TouchableOpacity className="items-end mb-6" onPress={() => navigation.navigate('RecuperarPassword')}>
           <Text className="text-[#1a3cff] font-semibold text-sm">
             ¿Olvidaste tu contraseña?
           </Text>
         </TouchableOpacity>
 
-        {/* Botón Login */}
+        {}
         <TouchableOpacity
           className="bg-[#1a3cff] rounded-2xl h-14 items-center justify-center mb-6"
           onPress={handleLogin}
@@ -132,7 +132,7 @@ export default function LoginScreen({ navigation }) {
           )}
         </TouchableOpacity>
 
-        {/* Separador */}
+        {}
         <View className="flex-row items-center mb-6">
           <View className="flex-1 h-px bg-gray-300" />
           <Text className="mx-4 text-gray-400 text-xs font-semibold tracking-widest">
@@ -141,7 +141,7 @@ export default function LoginScreen({ navigation }) {
           <View className="flex-1 h-px bg-gray-300" />
         </View>
 
-        {/* Google */}
+        {}
         <TouchableOpacity
           className="flex-row items-center justify-center bg-white rounded-2xl h-14 mb-8 shadow-sm"
           onPress={handleGoogle}
@@ -159,7 +159,7 @@ export default function LoginScreen({ navigation }) {
           )}
         </TouchableOpacity>
 
-        {/* Crear cuenta → va a SelectorRol primero para elegir el rol */}
+        {}
         <View className="flex-row justify-center">
           <Text className="text-gray-500 text-sm">¿No tienes cuenta? </Text>
           <TouchableOpacity onPress={() => navigation.navigate('SelectorRol')}>

@@ -12,7 +12,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../../services/api';
 
-// ─── PARADEROS EN ORDEN (Norte → Sur) ────────────────────────────────────────
 const PARADEROS = [
   'SANTA ROSA',
   'PROC. DE LA INDEPENDENCIA',
@@ -29,72 +28,69 @@ const PARADEROS = [
   'LAS PALMAS',
 ];
 
-// ─── TABLA DE PRECIOS POR DISTANCIA ──────────────────────────────────────────
-// Para cada índice de origen, define las bandas de precio hacia el sur
-// hasta: índice del último paradero en esa banda (inclusivo)
 const BANDAS_PRECIO = {
-  0: [ // SANTA ROSA
-    { hasta: 2, precio: 2.00 },   // → ACHO
-    { hasta: 3, precio: 3.00 },   // → PIZARRO-CAQUETA
-    { hasta: 7, precio: 4.00 },   // → AV.BRASIL, EJERCITO, PARDO
-    { hasta: 12, precio: 5.00 },  // → BENAVIDES...LAS PALMAS
+  0: [ 
+    { hasta: 2, precio: 2.00 },   
+    { hasta: 3, precio: 3.00 },   
+    { hasta: 7, precio: 4.00 },   
+    { hasta: 12, precio: 5.00 },  
   ],
-  1: [ // PROC. DE LA INDEPENDENCIA
-    { hasta: 3, precio: 2.00 },   // → ACHO, PIZARRO-CAQUETA
-    { hasta: 5, precio: 3.00 },   // → ALF.UGARTE, AV.BRASIL
-    { hasta: 7, precio: 4.00 },   // → EJERCITO, PARDO
-    { hasta: 12, precio: 5.00 },  // → BENAVIDES...LAS PALMAS
+  1: [ 
+    { hasta: 3, precio: 2.00 },   
+    { hasta: 5, precio: 3.00 },   
+    { hasta: 7, precio: 4.00 },   
+    { hasta: 12, precio: 5.00 },  
   ],
-  2: [ // ACHO
-    { hasta: 4, precio: 2.00 },   // → ALF.UGARTE
-    { hasta: 5, precio: 3.00 },   // → AV.BRASIL
-    { hasta: 8, precio: 4.00 },   // → EJERCITO, PARDO, AV.BENAVIDES
-    { hasta: 12, precio: 5.00 },  // → TOMAS MARSANO...LAS PALMAS
+  2: [ 
+    { hasta: 4, precio: 2.00 },   
+    { hasta: 5, precio: 3.00 },   
+    { hasta: 8, precio: 4.00 },   
+    { hasta: 12, precio: 5.00 },  
   ],
-  3: [ // PIZARRO - CAQUETA
-    { hasta: 4, precio: 2.00 },   // → ALF.UGARTE
-    { hasta: 6, precio: 3.00 },   // → AV.BRASIL, AV.EJERCITO
-    { hasta: 8, precio: 4.00 },   // → PARDO, AV.BENAVIDES
-    { hasta: 12, precio: 5.00 },  // → TOMAS MARSANO...LAS PALMAS
+  3: [ 
+    { hasta: 4, precio: 2.00 },   
+    { hasta: 6, precio: 3.00 },   
+    { hasta: 8, precio: 4.00 },   
+    { hasta: 12, precio: 5.00 },  
   ],
-  4: [ // ALFONSO UGARTE
-    { hasta: 6, precio: 2.00 },   // → AV.DEL EJERCITO
-    { hasta: 7, precio: 3.00 },   // → PARDO-MIRAFLORES
-    { hasta: 9, precio: 4.00 },   // → AV.BENAVIDES, TOMAS MARSANO
-    { hasta: 12, precio: 5.00 },  // → SJM...LAS PALMAS
+  4: [ 
+    { hasta: 6, precio: 2.00 },   
+    { hasta: 7, precio: 3.00 },   
+    { hasta: 9, precio: 4.00 },   
+    { hasta: 12, precio: 5.00 },  
   ],
-  5: [ // AV. BRASIL
-    { hasta: 7, precio: 2.00 },   // → PARDO-MIRAFLORES
-    { hasta: 9, precio: 3.00 },   // → AV.BENAVIDES, TOMAS MARSANO
-    { hasta: 10, precio: 4.00 },  // → SAN JUAN DE MIRAFLORES
-    { hasta: 12, precio: 5.00 },  // → VILLA EL SALVADOR, LAS PALMAS
+  5: [ 
+    { hasta: 7, precio: 2.00 },   
+    { hasta: 9, precio: 3.00 },   
+    { hasta: 10, precio: 4.00 },  
+    { hasta: 12, precio: 5.00 },  
   ],
-  6: [ // AV. DEL EJERCITO
-    { hasta: 8, precio: 2.00 },   // → AV.BENAVIDES
-    { hasta: 9, precio: 3.00 },   // → TOMAS MARSANO
-    { hasta: 10, precio: 4.00 },  // → SAN JUAN DE MIRAFLORES
-    { hasta: 12, precio: 5.00 },  // → VILLA EL SALVADOR, LAS PALMAS
+  6: [ 
+    { hasta: 8, precio: 2.00 },   
+    { hasta: 9, precio: 3.00 },   
+    { hasta: 10, precio: 4.00 },  
+    { hasta: 12, precio: 5.00 },  
   ],
-  7: [ // PARDO - MIRAFLORES
-    { hasta: 8, precio: 2.00 },   // → AV.BENAVIDES
-    { hasta: 10, precio: 3.00 },  // → TOMAS MARSANO, SJM
-    { hasta: 12, precio: 4.00 },  // → VILLA EL SALVADOR, LAS PALMAS
+  7: [ 
+    { hasta: 8, precio: 2.00 },   
+    { hasta: 10, precio: 3.00 },  
+    { hasta: 12, precio: 4.00 },  
   ],
-  8: [ // AV. BENAVIDES
-    { hasta: 9, precio: 2.00 },   // → TOMAS MARSANO
-    { hasta: 10, precio: 3.00 },  // → SAN JUAN DE MIRAFLORES
-    { hasta: 12, precio: 4.00 },  // → VILLA EL SALVADOR, LAS PALMAS
+  8: [ 
+    { hasta: 9, precio: 2.00 },   
+    { hasta: 10, precio: 3.00 },  
+    { hasta: 12, precio: 4.00 },  
   ],
-  9: [ // TOMAS MARSANO
-    { hasta: 10, precio: 2.00 },  // → SAN JUAN DE MIRAFLORES
-    { hasta: 12, precio: 3.00 },  // → VILLA EL SALVADOR, LAS PALMAS
+  9: [ 
+    { hasta: 10, precio: 2.00 },  
+    { hasta: 12, precio: 3.00 },  
   ],
-  10: [ // SAN JUAN DE MIRAFLORES
-    { hasta: 11, precio: 2.00 },  // → VILLA EL SALVADOR
-    { hasta: 12, precio: 3.00 },  // → LAS PALMAS
+  10: [ 
+    { hasta: 11, precio: 2.00 },  
+    { hasta: 12, precio: 3.00 },  
   ],
-  11: [ // VILLA EL SALVADOR
-    { hasta: 12, precio: 2.00 },  // → LAS PALMAS
+  11: [ 
+    { hasta: 12, precio: 2.00 },  
   ],
 };
 
@@ -108,23 +104,24 @@ function calcularPrecio(idxInicio, idxFin) {
   return 5.00;
 }
 
-// ─── COMPONENTE ──────────────────────────────────────────────────────────────
 export default function GenerarQRScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const [idxInicio, setIdxInicio] = useState(null);
   const [idxFin, setIdxFin] = useState(null);
+  const [sentido, setSentido] = useState('ida');
   const [qrImagen, setQrImagen] = useState(null);
   const [viaje, setViaje] = useState(null);
   const [generando, setGenerando] = useState(false);
   const [rutaId, setRutaId] = useState(null);
-  const [paso, setPaso] = useState('inicio'); // 'inicio' | 'fin' | 'confirmar' | 'qr'
+  const [paso, setPaso] = useState('inicio'); 
 
-  // Cargar el ID de la ruta "Santa Rosa - Horizonte" al montar
+  const PARADEROS_LIST = sentido === 'ida' ? PARADEROS : [...PARADEROS].reverse();
+
   const cargarRuta = useCallback(async () => {
     try {
       const { data } = await api.get('/rutas');
       if (data && data.length > 0) {
-        setRutaId(data[0].id); // Tomamos la primera ruta (CPSA)
+        setRutaId(data[0].id); 
       }
     } catch (error) {
       console.error('Error cargando rutas:', error);
@@ -135,8 +132,11 @@ export default function GenerarQRScreen({ navigation }) {
     cargarRuta();
   }, [cargarRuta]);
 
-  const precio = idxInicio !== null && idxFin !== null
-    ? calcularPrecio(idxInicio, idxFin)
+  const realIdxInicio = idxInicio !== null ? (sentido === 'ida' ? idxInicio : PARADEROS.length - 1 - idxInicio) : null;
+  const realIdxFin = idxFin !== null ? (sentido === 'ida' ? idxFin : PARADEROS.length - 1 - idxFin) : null;
+
+  const precio = realIdxInicio !== null && realIdxFin !== null
+    ? calcularPrecio(Math.min(realIdxInicio, realIdxFin), Math.max(realIdxInicio, realIdxFin))
     : 0;
 
   const handleGenerarQR = async () => {
@@ -148,8 +148,8 @@ export default function GenerarQRScreen({ navigation }) {
     try {
       const { data } = await api.post('/pasajero/generar-qr', {
         rutaId,
-        paraderoInicio: PARADEROS[idxInicio],
-        paraderoFin: PARADEROS[idxFin],
+        paraderoInicio: PARADEROS_LIST[idxInicio],
+        paraderoFin: PARADEROS_LIST[idxFin],
         monto: precio,
       });
       setQrImagen(data.qrImagen);
@@ -171,7 +171,6 @@ export default function GenerarQRScreen({ navigation }) {
     setPaso('inicio');
   };
 
-  // ── Vista: QR generado ────────────────────────────────────────────────────
   if (paso === 'qr' && qrImagen) {
     return (
       <View
@@ -187,7 +186,7 @@ export default function GenerarQRScreen({ navigation }) {
             Muéstraselo al conductor para abordar el bus
           </Text>
 
-          {/* Imagen QR */}
+          {}
           <View className="bg-white rounded-2xl p-3 shadow-sm mb-4"
             style={{ borderWidth: 2, borderColor: '#eef0ff' }}>
             <Image
@@ -197,10 +196,10 @@ export default function GenerarQRScreen({ navigation }) {
             />
           </View>
 
-          {/* Detalles del viaje */}
+          {}
           <View className="w-full bg-[#f0f2ff] rounded-2xl p-4 mb-6">
-            <FilaDetalle icono="location-outline" label="Desde" valor={PARADEROS[idxInicio]} />
-            <FilaDetalle icono="flag-outline" label="Hasta" valor={PARADEROS[idxFin]} />
+            <FilaDetalle icono="location-outline" label="Desde" valor={PARADEROS_LIST[idxInicio]} />
+            <FilaDetalle icono="flag-outline" label="Hasta" valor={PARADEROS_LIST[idxFin]} />
             <FilaDetalle
               icono="cash-outline"
               label="Tarifa"
@@ -228,10 +227,9 @@ export default function GenerarQRScreen({ navigation }) {
     );
   }
 
-  // ── Vista: Seleccionar paraderos ──────────────────────────────────────────
   return (
     <View className="flex-1 bg-[#f0f2ff]" style={{ paddingTop: insets.top }}>
-      {/* Header */}
+      {}
       <View className="flex-row items-center px-5 pt-4 pb-4">
         <TouchableOpacity
           className="bg-white rounded-full w-10 h-10 items-center justify-center shadow-sm mr-3"
@@ -244,29 +242,47 @@ export default function GenerarQRScreen({ navigation }) {
 
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-5">
 
-        {/* Ruta activa */}
-        <View className="bg-[#1a3cff] rounded-2xl px-4 py-3 flex-row items-center mb-6">
+        {}
+        <View className="bg-[#1a3cff] rounded-2xl px-4 py-3 flex-row items-center mb-4">
           <Ionicons name="bus" size={20} color="white" />
           <Text className="text-white font-bold ml-2 flex-1">
             Santa Rosa — Las Palmas (CPSA)
           </Text>
         </View>
 
-        {/* Paradero de inicio */}
+        {}
+        <View className="flex-row mb-6 bg-white rounded-2xl p-1 shadow-sm">
+          <TouchableOpacity 
+            className="flex-1 py-3 rounded-xl items-center"
+            style={{ backgroundColor: sentido === 'ida' ? '#eef0ff' : 'transparent' }}
+            onPress={() => { setSentido('ida'); setIdxInicio(null); setIdxFin(null); }}
+          >
+            <Text className="font-bold" style={{ color: sentido === 'ida' ? '#1a3cff' : '#9ca3af' }}>IDA (Norte a Sur)</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            className="flex-1 py-3 rounded-xl items-center"
+            style={{ backgroundColor: sentido === 'vuelta' ? '#eef0ff' : 'transparent' }}
+            onPress={() => { setSentido('vuelta'); setIdxInicio(null); setIdxFin(null); }}
+          >
+            <Text className="font-bold" style={{ color: sentido === 'vuelta' ? '#1a3cff' : '#9ca3af' }}>VUELTA (Sur a Norte)</Text>
+          </TouchableOpacity>
+        </View>
+
+        {}
         <Text className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">
           ¿Desde dónde subes?
         </Text>
         <View className="bg-white rounded-2xl shadow-sm mb-5 overflow-hidden">
-          {PARADEROS.slice(0, -1).map((p, idx) => (
+          {PARADEROS_LIST.slice(0, -1).map((p, idx) => (
             <TouchableOpacity
               key={idx}
               className="flex-row items-center px-4 py-3"
-              style={idx < PARADEROS.length - 2
+              style={idx < PARADEROS_LIST.length - 2
                 ? { borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }
                 : {}}
               onPress={() => {
                 setIdxInicio(idx);
-                setIdxFin(null); // Resetear destino al cambiar origen
+                setIdxFin(null); 
               }}
             >
               <View
@@ -293,21 +309,25 @@ export default function GenerarQRScreen({ navigation }) {
           ))}
         </View>
 
-        {/* Paradero de destino */}
+        {}
         {idxInicio !== null && (
           <>
             <Text className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">
               ¿Hasta dónde vas?
             </Text>
             <View className="bg-white rounded-2xl shadow-sm mb-5 overflow-hidden">
-              {PARADEROS.slice(idxInicio + 1).map((p, i) => {
+              {PARADEROS_LIST.slice(idxInicio + 1).map((p, i) => {
                 const idx = idxInicio + 1 + i;
-                const precioBanda = calcularPrecio(idxInicio, idx);
+                
+                const realIdxI = sentido === 'ida' ? idxInicio : PARADEROS.length - 1 - idxInicio;
+                const realIdxF = sentido === 'ida' ? idx : PARADEROS.length - 1 - idx;
+                const precioBanda = calcularPrecio(Math.min(realIdxI, realIdxF), Math.max(realIdxI, realIdxF));
+
                 return (
                   <TouchableOpacity
                     key={idx}
                     className="flex-row items-center px-4 py-3"
-                    style={i < PARADEROS.length - idxInicio - 2
+                    style={i < PARADEROS_LIST.length - idxInicio - 2
                       ? { borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }
                       : {}}
                     onPress={() => setIdxFin(idx)}
@@ -344,12 +364,12 @@ export default function GenerarQRScreen({ navigation }) {
           </>
         )}
 
-        {/* Resumen y botón confirmar */}
+        {}
         {idxInicio !== null && idxFin !== null && (
           <View className="bg-white rounded-2xl p-5 shadow-sm mb-8">
             <Text className="text-sm font-bold text-gray-400 mb-3">Resumen del viaje</Text>
-            <FilaDetalle icono="location-outline" label="Desde" valor={PARADEROS[idxInicio]} />
-            <FilaDetalle icono="flag-outline" label="Hasta" valor={PARADEROS[idxFin]} />
+            <FilaDetalle icono="location-outline" label="Desde" valor={PARADEROS_LIST[idxInicio]} />
+            <FilaDetalle icono="flag-outline" label="Hasta" valor={PARADEROS_LIST[idxFin]} />
             <FilaDetalle
               icono="cash-outline"
               label="Tarifa"

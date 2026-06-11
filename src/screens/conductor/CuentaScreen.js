@@ -64,7 +64,7 @@ export default function ConductorCuentaScreen() {
     <View className="flex-1 bg-[#f0f2ff]" style={{ paddingTop: insets.top }}>
       <ScrollView showsVerticalScrollIndicator={false}>
 
-        {/* Header */}
+        {}
         <View className="bg-[#0f172a] px-5 pt-4 pb-10">
           <Text className="text-white text-2xl font-bold mb-6">Mi Cuenta</Text>
           <View className="items-center">
@@ -87,7 +87,7 @@ export default function ConductorCuentaScreen() {
           </View>
         </View>
 
-        {/* Tarjeta de info */}
+        {}
         <View className="mx-5 -mt-6 bg-white rounded-3xl p-5 shadow-sm">
           <View className="flex-row justify-between">
             <View className="flex-1 items-center">
@@ -111,7 +111,7 @@ export default function ConductorCuentaScreen() {
           </View>
         </View>
 
-        {/* Datos personales */}
+        {}
         <View className="px-5 mt-6">
           <Text className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">
             Datos personales
@@ -130,7 +130,7 @@ export default function ConductorCuentaScreen() {
           </View>
         </View>
 
-        {/* Ayuda */}
+        {}
         <View className="px-5 mt-6">
           <Text className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">
             Soporte
@@ -149,7 +149,7 @@ export default function ConductorCuentaScreen() {
           </View>
         </View>
 
-        {/* Cerrar sesión */}
+        {}
         <View className="px-5 mt-6 mb-8">
           <TouchableOpacity
             className="bg-white rounded-2xl py-4 flex-row items-center justify-center shadow-sm"

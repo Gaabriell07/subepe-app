@@ -15,7 +15,6 @@ import EditarPerfilScreen from '../screens/pasajero/EditarPerfilScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-// ─── Config de tabs ──────────────────────────────────────────────────────────
 const TAB_CONFIG = [
   {
     name: 'Home',
@@ -34,7 +33,7 @@ const TAB_CONFIG = [
     label: 'Billetera',
     icon: 'wallet-outline',
     iconActive: 'wallet',
-    isMC: true, // MaterialCommunityIcons
+    isMC: true, 
   },
   {
     name: 'Cuenta',
@@ -44,7 +43,6 @@ const TAB_CONFIG = [
   },
 ];
 
-// ─── Botón de tab animado ─────────────────────────────────────────────────────
 function TabButton({ tab, focused, onPress }) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const dotAnim  = useRef(new Animated.Value(focused ? 1 : 0)).current;
@@ -78,19 +76,19 @@ function TabButton({ tab, focused, onPress }) {
       style={styles.tabButton}
     >
       <Animated.View style={[styles.tabInner, { transform: [{ scale: scaleAnim }] }]}>
-        {/* Dot indicador superior */}
+        {}
         <Animated.View
           style={[styles.dot, { transform: [{ scaleX: dotScale }, { scaleY: dotScale }] }]}
         />
 
-        {/* Ícono */}
+        {}
         {tab.isMC ? (
           <MaterialCommunityIcons name={iconName} size={22} color={iconColor} />
         ) : (
           <Ionicons name={iconName} size={22} color={iconColor} />
         )}
 
-        {/* Label */}
+        {}
         <Text style={[styles.tabLabel, { color: iconColor, fontWeight: focused ? '700' : '500' }]}>
           {tab.label}
         </Text>
@@ -99,7 +97,6 @@ function TabButton({ tab, focused, onPress }) {
   );
 }
 
-// ─── Tab bar personalizado ────────────────────────────────────────────────────
 function CustomTabBar({ state, navigation }) {
   const insets = useSafeAreaInsets();
 
@@ -125,14 +122,12 @@ function CustomTabBar({ state, navigation }) {
   );
 }
 
-// ─── Bottom Tabs ──────────────────────────────────────────────────────────────
 function PasajeroTabs() {
   return (
     <Tab.Navigator
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{ headerShown: false }}
-      // lazy: true → solo monta la pantalla cuando el usuario la visita por primera vez
-      // Reduce significativamente el tiempo de carga inicial
+
       detachInactiveScreens={true}
     >
       <Tab.Screen name="Home"    component={DashboardScreen} />
@@ -143,7 +138,6 @@ function PasajeroTabs() {
   );
 }
 
-// ─── Stack principal ──────────────────────────────────────────────────────────
 export default function PasajeroNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -162,7 +156,6 @@ export default function PasajeroNavigator() {
   );
 }
 
-// ─── Estilos ──────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   tabBar: {
     flexDirection: 'row',

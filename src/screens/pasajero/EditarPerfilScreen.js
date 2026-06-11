@@ -12,7 +12,6 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../../services/api';
 
-// ─── Tipos de carnet con info completa ───────────────────────────────────────
 const CARNETS = [
   {
     value: 'NORMAL',
@@ -87,14 +86,14 @@ export default function EditarPerfilScreen({ navigation }) {
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
 
-  // Datos del perfil
   const [nombres, setNombres] = useState('');
   const [apellidos, setApellidos] = useState('');
   const [sexo, setSexo] = useState('');
   const [fechaNacimiento, setFechaNacimiento] = useState('');
   const [tipoCarnet, setTipoCarnet] = useState('NORMAL');
 
-  // Cargar perfil actual
+  const [tipoCarnetOriginal, setTipoCarnetOriginal] = useState('NORMAL');
+
   useEffect(() => {
     const cargar = async () => {
       try {
@@ -103,7 +102,8 @@ export default function EditarPerfilScreen({ navigation }) {
         setApellidos(data.apellidos || '');
         setSexo(data.sexo || '');
         setTipoCarnet(data.pasajero?.tipoCarnet || 'NORMAL');
-        // Convertir fecha ISO a DD/MM/AAAA para mostrar
+        setTipoCarnetOriginal(data.pasajero?.tipoCarnet || 'NORMAL');
+        
         if (data.fechaNacimiento) {
           const d = new Date(data.fechaNacimiento);
           const dia = String(d.getDate()).padStart(2, '0');
@@ -150,22 +150,70 @@ export default function EditarPerfilScreen({ navigation }) {
       Alert.alert('Error', 'Fecha inválida. Usa el formato DD/MM/AAAA');
       return;
     }
+
     try {
       setGuardando(true);
-      await api.put('/pasajero/perfil', {
-        nombres: nombres.trim(),
-        apellidos: apellidos.trim(),
-        sexo,
-        fechaNacimiento: fecha.toISOString(),
-        tipoCarnet,
-      });
-      Alert.alert(
-        '¡Perfil actualizado!',
-        'Tus cambios han sido guardados correctamente.',
-        [{ text: 'OK', onPress: () => navigation.goBack() }]
-      );
+
+      if (tipoCarnet !== tipoCarnetOriginal && tipoCarnet !== 'NORMAL') {
+        const ImagePicker = require('expo-image-picker');
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (permissionResult.granted === false) {
+          Alert.alert('Permiso denegado', 'Necesitas dar permiso para acceder a la galería y subir tu documento.');
+          setGuardando(false);
+          return;
+        }
+
+        const pickerResult = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+          quality: 0.7,
+        });
+
+        if (pickerResult.canceled) {
+          setGuardando(false);
+          return; 
+        }
+
+        const formData = new FormData();
+        const localUri = pickerResult.assets[0].uri;
+        const filename = localUri.split('/').pop();
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : `image`;
+
+        formData.append('archivo', { uri: localUri, name: filename, type });
+        formData.append('tipo', 'CARNET');
+
+        const uploadRes = await api.post('/storage/subir', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        const urlImagen = uploadRes.data.archivo.url;
+
+        await api.post('/pasajero/solicitud-carnet', {
+          tipoCarnetSolicitado: tipoCarnet,
+          urlImagenDocumento: urlImagen,
+        });
+
+        Alert.alert('Solicitud enviada', 'Tu documento será revisado por un administrador pronto. Tu tarifa seguirá siendo la actual hasta que sea aprobada.');
+      } else {
+        
+        await api.put('/pasajero/perfil', {
+          nombres: nombres.trim(),
+          apellidos: apellidos.trim(),
+          sexo,
+          fechaNacimiento: fecha.toISOString(),
+          tipoCarnet: tipoCarnet === 'NORMAL' ? 'NORMAL' : tipoCarnetOriginal, 
+        });
+        Alert.alert(
+          '¡Perfil actualizado!',
+          'Tus cambios han sido guardados correctamente.',
+          [{ text: 'OK', onPress: () => navigation.goBack() }]
+        );
+      }
     } catch (error) {
-      Alert.alert('Error', 'No se pudo actualizar el perfil');
+      console.error(error);
+      Alert.alert('Error', error.response?.data?.error || 'No se pudo actualizar el perfil');
     } finally {
       setGuardando(false);
     }
@@ -181,7 +229,7 @@ export default function EditarPerfilScreen({ navigation }) {
 
   return (
     <View className="flex-1 bg-[#f0f2ff]" style={{ paddingTop: insets.top }}>
-      {/* Header */}
+      {}
       <View className="flex-row items-center px-5 pt-4 pb-4">
         <TouchableOpacity
           className="bg-white rounded-full w-10 h-10 items-center justify-center shadow-sm mr-3"
@@ -197,12 +245,12 @@ export default function EditarPerfilScreen({ navigation }) {
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: insets.bottom + 20 }}
         keyboardShouldPersistTaps="handled"
       >
-        {/* ── Datos personales ─────────────────────────────────────────────── */}
+        {}
         <Text className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">
           Datos personales
         </Text>
         <View className="bg-white rounded-2xl px-4 py-2 shadow-sm mb-5">
-          {/* Nombres */}
+          {}
           <View className="flex-row items-center py-3"
             style={{ borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }}>
             <Ionicons name="person-outline" size={18} color="#1a3cff" style={{ marginRight: 12 }} />
@@ -219,7 +267,7 @@ export default function EditarPerfilScreen({ navigation }) {
             </View>
           </View>
 
-          {/* Apellidos */}
+          {}
           <View className="flex-row items-center py-3"
             style={{ borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }}>
             <Ionicons name="person-outline" size={18} color="#1a3cff" style={{ marginRight: 12 }} />
@@ -236,7 +284,7 @@ export default function EditarPerfilScreen({ navigation }) {
             </View>
           </View>
 
-          {/* Fecha */}
+          {}
           <View className="flex-row items-center py-3"
             style={{ borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }}>
             <Ionicons name="calendar-outline" size={18} color="#1a3cff" style={{ marginRight: 12 }} />
@@ -254,7 +302,7 @@ export default function EditarPerfilScreen({ navigation }) {
             </View>
           </View>
 
-          {/* Sexo */}
+          {}
           <View className="py-3">
             <Text className="text-xs text-gray-400 mb-2">Sexo</Text>
             <View className="flex-row gap-2">
@@ -279,7 +327,7 @@ export default function EditarPerfilScreen({ navigation }) {
           </View>
         </View>
 
-        {/* ── Tipo de carnet ───────────────────────────────────────────────── */}
+        {}
         <Text className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">
           Tipo de carnet
         </Text>
@@ -298,7 +346,7 @@ export default function EditarPerfilScreen({ navigation }) {
               } : {}}
               onPress={() => setTipoCarnet(c.value)}
             >
-              {/* Ícono */}
+              {}
               <View
                 className="w-10 h-10 rounded-xl items-center justify-center mr-3"
                 style={{ backgroundColor: tipoCarnet === c.value ? c.color : c.bg }}
@@ -310,13 +358,13 @@ export default function EditarPerfilScreen({ navigation }) {
                 />
               </View>
 
-              {/* Info */}
+              {}
               <View className="flex-1">
                 <Text className="font-bold text-gray-900 text-sm">{c.label}</Text>
                 <Text className="text-gray-400 text-xs mt-0.5">{c.descripcion}</Text>
               </View>
 
-              {/* Precio badge */}
+              {}
               <View
                 className="rounded-full px-3 py-1 ml-2"
                 style={{ backgroundColor: c.gratis ? '#dcfce7' : c.bg }}
@@ -329,7 +377,7 @@ export default function EditarPerfilScreen({ navigation }) {
                 </Text>
               </View>
 
-              {/* Check */}
+              {}
               {tipoCarnet === c.value && (
                 <Ionicons name="checkmark-circle" size={20} color={c.color} style={{ marginLeft: 8 }} />
               )}
@@ -337,7 +385,7 @@ export default function EditarPerfilScreen({ navigation }) {
           ))}
         </View>
 
-        {/* Aviso de verificación */}
+        {}
         <View className="bg-amber-50 rounded-2xl p-4 mb-6 flex-row items-start">
           <Ionicons name="information-circle-outline" size={20} color="#ca8a04" />
           <Text className="text-amber-700 text-xs ml-2 flex-1 leading-5">
@@ -345,7 +393,7 @@ export default function EditarPerfilScreen({ navigation }) {
           </Text>
         </View>
 
-        {/* Botón guardar */}
+        {}
         <TouchableOpacity
           className="bg-[#1a3cff] rounded-2xl py-4 items-center"
           onPress={handleGuardar}

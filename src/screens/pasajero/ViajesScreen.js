@@ -18,7 +18,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import QRCode from 'react-native-qrcode-svg';
 import api from '../../services/api';
 
-// ─── Config de estados de viaje ───────────────────────────────────────────────
 const ESTADO_CONFIG = {
   PENDIENTE:  { label: 'Pendiente',  bg: '#fef9c3', text: '#ca8a04', icono: 'time-outline',             desc: 'QR listo para mostrar' },
   EN_CURSO:   { label: 'En curso',   bg: '#dcfce7', text: '#16a34a', icono: 'bus-outline',              desc: 'Viaje en progreso' },
@@ -38,7 +37,6 @@ function formatFecha(iso) {
   });
 }
 
-// ─── Sello animado (memoizado) ────────────────────────────────────────────────
 const Sello = memo(function Sello({ activo, delay }) {
   const scaleAnim   = useRef(new Animated.Value(activo ? 0 : 1)).current;
   const opacityAnim = useRef(new Animated.Value(activo ? 0 : 0.3)).current;
@@ -67,7 +65,6 @@ const Sello = memo(function Sello({ activo, delay }) {
   );
 });
 
-// ─── Tarjeta de fidelidad ─────────────────────────────────────────────────────
 function TarjetaFidelidad({ datos, onCanjear, canjeando }) {
   const { sellosActuales = 0, viajesGratisDisponibles = 0, totalViajes = 0 } = datos;
   const progreso = sellosActuales / TARGET_SELLOS;
@@ -90,7 +87,7 @@ function TarjetaFidelidad({ datos, onCanjear, canjeando }) {
   return (
     <View className="mx-5 mb-5">
       <View style={styles.card}>
-        {/* Header */}
+        {}
         <View style={styles.cardHeader}>
           <View>
             <Text style={styles.cardSubtitle}>CPSA · TARJETA FIDELIDAD</Text>
@@ -102,14 +99,14 @@ function TarjetaFidelidad({ datos, onCanjear, canjeando }) {
           </View>
         </View>
 
-        {/* Grid sellos */}
+        {}
         <View style={styles.sellosGrid}>
           {sellos.map((activo, i) => (
             <Sello key={i} activo={activo} delay={i * 25} />
           ))}
         </View>
 
-        {/* Barra progreso */}
+        {}
         <View style={styles.progressSection}>
           <View style={styles.progressLabels}>
             <Text style={styles.progressText}>{sellosActuales} / {TARGET_SELLOS} viajes</Text>
@@ -124,7 +121,7 @@ function TarjetaFidelidad({ datos, onCanjear, canjeando }) {
           </View>
         </View>
 
-        {/* Viajes gratis disponibles */}
+        {}
         {viajesGratisDisponibles > 0 && (
           <Animated.View style={[styles.canjeBox, { opacity: glowAnim }]}>
             <Ionicons name="gift" size={18} color="#818cf8" />
@@ -176,7 +173,7 @@ function TabFidelidad({ datos, onCanjear, canjeando }) {
         </View>
       </View>
 
-      {/* Historial de canjes */}
+      {}
       {historialCanjes.length > 0 && (
         <View className="mx-5 mb-20">
           <Text className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">Canjes realizados</Text>
@@ -202,7 +199,6 @@ function TabFidelidad({ datos, onCanjear, canjeando }) {
   );
 }
 
-// ─── Tarjeta de viaje (memoizada) ─────────────────────────────────────────────
 const TarjetaViaje = memo(function TarjetaViaje({ viaje, onVerQR, index }) {
   const slideAnim   = useRef(new Animated.Value(24)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -219,7 +215,7 @@ const TarjetaViaje = memo(function TarjetaViaje({ viaje, onVerQR, index }) {
   return (
     <Animated.View style={{ transform: [{ translateY: slideAnim }], opacity: opacityAnim }}>
       <View className="bg-white rounded-2xl mx-5 mb-4 shadow-sm overflow-hidden">
-        {/* Estado badge */}
+        {}
         <View style={{ backgroundColor: cfg.bg, paddingHorizontal: 16, paddingVertical: 8 }}>
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center">
@@ -276,7 +272,6 @@ const TarjetaViaje = memo(function TarjetaViaje({ viaje, onVerQR, index }) {
   );
 });
 
-// ─── Pill de filtro (tamaño FIJO para que no cambie al seleccionarse) ─────────
 function FiltroPill({ label, activo, onPress }) {
   return (
     <TouchableOpacity
@@ -288,7 +283,6 @@ function FiltroPill({ label, activo, onPress }) {
   );
 }
 
-// ─── PANTALLA PRINCIPAL ───────────────────────────────────────────────────────
 export default function ViajesScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const [tabActivo, setTabActivo] = useState('viajes');
@@ -351,7 +345,6 @@ export default function ViajesScreen({ navigation }) {
     );
   }, [cargarDatos]);
 
-  // Filtrado memoizado — solo recalcula cuando cambian viajes o filtro
   const viajesFiltrados = useMemo(() => {
     if (filtro === 'Todos') return viajes;
     return viajes.filter((v) => v.estado === FILTRO_MAP[filtro]);
@@ -368,7 +361,7 @@ export default function ViajesScreen({ navigation }) {
   return (
     <View className="flex-1 bg-[#f0f2ff]" style={{ paddingTop: insets.top }}>
 
-      {/* Header */}
+      {}
       <View className="px-5 pt-5 pb-3">
         <View className="flex-row items-center justify-between">
           <Text className="text-2xl font-bold text-gray-900">Historial</Text>
@@ -385,7 +378,7 @@ export default function ViajesScreen({ navigation }) {
         </View>
       </View>
 
-      {/* Tabs */}
+      {}
       <View className="mx-5 mb-3 bg-white rounded-2xl p-1 shadow-sm" style={{ position: 'relative' }}>
         <Animated.View
           className="absolute top-1 bottom-1 rounded-xl bg-[#1a3cff]"
@@ -412,7 +405,7 @@ export default function ViajesScreen({ navigation }) {
         <TabFidelidad datos={fidelidad} onCanjear={handleCanjear} canjeando={canjeando} />
       ) : (
         <>
-          {/* ⬇️ FIX: ScrollView con alignItems:'center' evita stretching de pills */}
+          {}
           <ScrollView horizontal showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.filtrosContainer}>
             {FILTROS_VIAJE.map((f) => (
@@ -440,7 +433,7 @@ export default function ViajesScreen({ navigation }) {
               renderItem={renderViaje}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingTop: 4, paddingBottom: insets.bottom + 16 }}
-              // ── Optimizaciones de performance ──
+              
               removeClippedSubviews
               windowSize={5}
               maxToRenderPerBatch={6}
@@ -451,7 +444,7 @@ export default function ViajesScreen({ navigation }) {
         </>
       )}
 
-      {/* Modal QR pendiente */}
+      {}
       <Modal visible={!!viajeQR} transparent animationType="fade" onRequestClose={() => setViajeQR(null)}>
         <Pressable style={styles.modalBg} onPress={() => setViajeQR(null)}>
           <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation()}>
@@ -488,14 +481,12 @@ function FilaInfo({ label, valor }) {
   );
 }
 
-// ─── StyleSheet (evita recalculos de NativeWind en tiempo de render) ──────────
 const styles = StyleSheet.create({
-  // Sellos
+  
   sello: { width: 28, height: 28, borderRadius: 14, margin: 4, alignItems: 'center', justifyContent: 'center' },
   selloActivo: { backgroundColor: '#1a3cff' },
   selloVacio:  { backgroundColor: '#f1f5f9' },
 
-  // Tarjeta fidelidad
   card:        { backgroundColor: '#0f172a', borderRadius: 24, overflow: 'hidden' },
   cardHeader:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 20, paddingBottom: 16 },
   cardSubtitle:{ color: 'rgba(255,255,255,0.5)', fontSize: 11, fontWeight: '600', letterSpacing: 1.2 },
@@ -515,19 +506,16 @@ const styles = StyleSheet.create({
   canjeBtn:     { backgroundColor: '#1a3cff', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8, marginLeft: 8 },
   canjeBtnText: { color: 'white', fontWeight: 'bold', fontSize: 12 },
 
-  // ⬇️ PILLS: dimensiones FIJAS — background cambia pero el tamaño no
   filtrosContainer: { paddingHorizontal: 20, paddingBottom: 8, alignItems: 'center' },
   pill:         { height: 36, paddingHorizontal: 16, borderRadius: 99, marginRight: 8, backgroundColor: 'white', alignItems: 'center', justifyContent: 'center' },
   pillActivo:   { backgroundColor: '#1a3cff' },
   pillText:     { fontSize: 13, fontWeight: '600', color: '#9ca3af' },
   pillTextActivo:{ color: 'white' },
 
-  // Header badge
   selloBadge:     { flexDirection: 'row', alignItems: 'center', backgroundColor: '#0f172a', borderRadius: 99, paddingHorizontal: 12, paddingVertical: 6 },
   selloBadgeText: { color: 'white', fontWeight: 'bold', fontSize: 13, marginLeft: 4 },
   greenDot:       { width: 7, height: 7, borderRadius: 99, backgroundColor: '#4ade80', marginLeft: 6 },
 
-  // Modal
   modalBg:   { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 },
   modalCard: { backgroundColor: 'white', borderRadius: 24, padding: 24, width: '100%', alignItems: 'center' },
   qrBox:     { backgroundColor: 'white', padding: 12, borderRadius: 16, marginBottom: 20, borderWidth: 2, borderColor: '#eef0ff' },

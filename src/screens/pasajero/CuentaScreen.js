@@ -91,8 +91,6 @@ export default function CuentaScreen({ navigation }) {
   const tipoCarnet  = perfil?.pasajero?.tipoCarnet || 'NORMAL';
   const carnetColor = TIPO_CARNET_COLOR[tipoCarnet] ?? TIPO_CARNET_COLOR.NORMAL;
 
-  // Si la carga terminó pero el perfil sigue nulo (error 401 / red)
-  // mostramos un estado vacío en lugar de romper el render
   if (!cargando && !perfil) {
     return (
       <View className="flex-1 items-center justify-center bg-[#f0f2ff] px-8">
@@ -125,11 +123,11 @@ export default function CuentaScreen({ navigation }) {
     <View className="flex-1 bg-[#f0f2ff]" style={{ paddingTop: insets.top }}>
       <ScrollView showsVerticalScrollIndicator={false}>
 
-        {/* Header azul con avatar */}
+        {}
         <View className="bg-[#1a3cff] px-5 pt-4 pb-10">
           <Text className="text-white text-2xl font-bold mb-6">Mi Cuenta</Text>
           <View className="items-center">
-            {/* Avatar con iniciales */}
+            {}
             <View
               className="w-24 h-24 rounded-full bg-white/20 items-center justify-center mb-3"
               style={{ borderWidth: 3, borderColor: 'rgba(255,255,255,0.4)' }}
@@ -142,7 +140,7 @@ export default function CuentaScreen({ navigation }) {
             <Text className="text-white opacity-70 text-sm mt-1">
               {perfil?.email || usuario?.email}
             </Text>
-            {/* Badge de tipo carnet */}
+            {}
             <View
               className="mt-3 rounded-full px-4 py-1"
               style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
@@ -154,7 +152,7 @@ export default function CuentaScreen({ navigation }) {
           </View>
         </View>
 
-        {/* Tarjeta de información flotante */}
+        {}
         <View className="mx-5 -mt-6 bg-white rounded-3xl p-5 shadow-sm">
           <View className="flex-row justify-between">
             <View className="flex-1 items-center">
@@ -194,7 +192,7 @@ export default function CuentaScreen({ navigation }) {
           </View>
         </View>
 
-        {/* Sección: Datos personales */}
+        {}
         <View className="px-5 mt-6">
           <Text className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">
             Datos personales
@@ -225,7 +223,7 @@ export default function CuentaScreen({ navigation }) {
             />
           </View>
 
-          {/* Botón editar perfil */}
+          {}
           <TouchableOpacity
             className="mt-3 bg-[#eef0ff] rounded-2xl py-4 flex-row items-center justify-center"
             onPress={() => navigation.navigate('EditarPerfil')}
@@ -235,14 +233,14 @@ export default function CuentaScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {/* Sección: Configuración */}
+        {}
         <View className="px-5 mt-6">
           <Text className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">
             Configuración
           </Text>
           <View className="bg-white rounded-2xl shadow-sm overflow-hidden">
 
-            {/* Notificaciones */}
+            {}
             <View
               className="flex-row items-center px-4 py-4"
               style={{ borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }}
@@ -259,7 +257,7 @@ export default function CuentaScreen({ navigation }) {
               />
             </View>
 
-            {/* Cambiar contraseña */}
+            {}
             <TouchableOpacity
               className="flex-row items-center px-4 py-4"
               style={{ borderBottomWidth: 1, borderBottomColor: '#f3f4f6' }}
@@ -272,7 +270,7 @@ export default function CuentaScreen({ navigation }) {
               <Ionicons name="chevron-forward" size={18} color="#ccc" />
             </TouchableOpacity>
 
-            {/* Ayuda */}
+            {}
             <TouchableOpacity
               className="flex-row items-center px-4 py-4"
               onPress={() => Alert.alert('Soporte', 'Contáctanos: soporte@subepe.pe')}
@@ -286,7 +284,7 @@ export default function CuentaScreen({ navigation }) {
           </View>
         </View>
 
-        {/* Botón cerrar sesión */}
+        {}
         <View className="px-5 mt-6 mb-8">
           <TouchableOpacity
             className="bg-white rounded-2xl py-4 flex-row items-center justify-center shadow-sm"
@@ -307,7 +305,6 @@ export default function CuentaScreen({ navigation }) {
   );
 }
 
-// Componente reutilizable para cada fila de información
 function InfoFila({ icono, label, valor, borde = false }) {
   return (
     <View

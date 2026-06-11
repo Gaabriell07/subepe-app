@@ -27,7 +27,6 @@ export default function RegistroScreen({ navigation, route }) {
   const [paso, setPaso] = useState(1);
   const [cargando, setCargando] = useState(false);
 
-  // Paso 1 – Datos personales
   const [nombres, setNombres] = useState('');
   const [apellidos, setApellidos] = useState('');
   const [dni, setDni] = useState('');
@@ -119,7 +118,6 @@ export default function RegistroScreen({ navigation, route }) {
     }
   };
 
-  // ──────────────────────────── UI ────────────────────────────
   const rolLabel = rol === 'CONDUCTOR' ? 'Conductor' : 'Pasajero';
 
   return (
@@ -128,7 +126,7 @@ export default function RegistroScreen({ navigation, route }) {
         contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 40, paddingBottom: 60 }}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Header */}
+        {}
         <TouchableOpacity
           className="mb-6 flex-row items-center"
           onPress={() => (paso === 1 ? navigation.goBack() : setPaso(1))}
@@ -139,7 +137,7 @@ export default function RegistroScreen({ navigation, route }) {
           </Text>
         </TouchableOpacity>
 
-        {/* Logo + Título */}
+        {}
         <View className="items-center mb-8">
           <Image
             source={require('../../../images/subepeicono.png')}
@@ -150,9 +148,9 @@ export default function RegistroScreen({ navigation, route }) {
           <Text className="text-sm text-gray-500 mt-1">Regístrate como {rolLabel}</Text>
         </View>
 
-        {/* Indicador de pasos */}
+        {}
         <View className="flex-row items-center justify-center mb-8">
-          {/* Paso 1 */}
+          {}
           <View
             className={`w-8 h-8 rounded-full items-center justify-center ${paso >= 1 ? 'bg-[#1a3cff]' : 'bg-gray-200'}`}
           >
@@ -163,7 +161,7 @@ export default function RegistroScreen({ navigation, route }) {
             )}
           </View>
           <View className={`flex-1 h-1 mx-2 rounded-full ${paso > 1 ? 'bg-[#1a3cff]' : 'bg-gray-200'}`} />
-          {/* Paso 2 */}
+          {}
           <View
             className={`w-8 h-8 rounded-full items-center justify-center ${paso >= 2 ? 'bg-[#1a3cff]' : 'bg-gray-200'}`}
           >
@@ -173,10 +171,10 @@ export default function RegistroScreen({ navigation, route }) {
 
         {paso === 1 ? (
           <>
-            {/* ───── PASO 1 ───── */}
+            {}
             <Text className="text-base font-bold text-gray-800 mb-5">Datos personales</Text>
 
-            {/* Nombres */}
+            {}
             <Text className="text-sm font-semibold text-gray-700 mb-1">Nombres</Text>
             <View className="flex-row items-center bg-[#eef0ff] rounded-2xl px-4 mb-4 h-14">
               <Ionicons name="person-outline" size={18} color="#999" />
@@ -190,7 +188,7 @@ export default function RegistroScreen({ navigation, route }) {
               />
             </View>
 
-            {/* Apellidos */}
+            {}
             <Text className="text-sm font-semibold text-gray-700 mb-1">Apellidos</Text>
             <View className="flex-row items-center bg-[#eef0ff] rounded-2xl px-4 mb-4 h-14">
               <Ionicons name="person-outline" size={18} color="#999" />
@@ -204,7 +202,7 @@ export default function RegistroScreen({ navigation, route }) {
               />
             </View>
 
-            {/* DNI */}
+            {}
             <Text className="text-sm font-semibold text-gray-700 mb-1">DNI</Text>
             <View className="flex-row items-center bg-[#eef0ff] rounded-2xl px-4 mb-4 h-14">
               <Ionicons name="card-outline" size={18} color="#999" />
@@ -219,7 +217,7 @@ export default function RegistroScreen({ navigation, route }) {
               />
             </View>
 
-            {/* Fecha de nacimiento */}
+            {}
             <Text className="text-sm font-semibold text-gray-700 mb-1">Fecha de nacimiento</Text>
             <View className="flex-row items-center bg-[#eef0ff] rounded-2xl px-4 mb-4 h-14">
               <Ionicons name="calendar-outline" size={18} color="#999" />
@@ -234,7 +232,7 @@ export default function RegistroScreen({ navigation, route }) {
               />
             </View>
 
-            {/* Sexo */}
+            {}
             <Text className="text-sm font-semibold text-gray-700 mb-2">Sexo</Text>
             <View className="flex-row gap-3 mb-6">
               {SEXOS.map((s) => (
@@ -258,7 +256,7 @@ export default function RegistroScreen({ navigation, route }) {
               ))}
             </View>
 
-            {/* Botón Siguiente */}
+            {}
             <TouchableOpacity
               className="bg-[#1a3cff] rounded-2xl h-14 items-center justify-center"
               onPress={handleSiguiente}
@@ -271,10 +269,10 @@ export default function RegistroScreen({ navigation, route }) {
           </>
         ) : (
           <>
-            {/* ───── PASO 2 ───── */}
+            {}
             <Text className="text-base font-bold text-gray-800 mb-5">Credenciales de acceso</Text>
 
-            {/* Email */}
+            {}
             <Text className="text-sm font-semibold text-gray-700 mb-1">Correo electrónico</Text>
             <View className="flex-row items-center bg-[#eef0ff] rounded-2xl px-4 mb-4 h-14">
               <Ionicons name="mail-outline" size={18} color="#999" />
@@ -289,7 +287,7 @@ export default function RegistroScreen({ navigation, route }) {
               />
             </View>
 
-            {/* Contraseña */}
+            {}
             <Text className="text-sm font-semibold text-gray-700 mb-1">Contraseña</Text>
             <View className="flex-row items-center bg-[#eef0ff] rounded-2xl px-4 mb-4 h-14">
               <Ionicons name="lock-closed-outline" size={18} color="#999" />
@@ -310,7 +308,7 @@ export default function RegistroScreen({ navigation, route }) {
               </TouchableOpacity>
             </View>
 
-            {/* Confirmar contraseña */}
+            {}
             <Text className="text-sm font-semibold text-gray-700 mb-1">Confirmar contraseña</Text>
             <View className="flex-row items-center bg-[#eef0ff] rounded-2xl px-4 mb-6 h-14">
               <Ionicons name="lock-closed-outline" size={18} color="#999" />
@@ -331,7 +329,7 @@ export default function RegistroScreen({ navigation, route }) {
               </TouchableOpacity>
             </View>
 
-            {/* Indicador de fortaleza */}
+            {}
             {password.length > 0 && (
               <View className="mb-6">
                 <View className="flex-row gap-1 mb-1">
@@ -360,7 +358,7 @@ export default function RegistroScreen({ navigation, route }) {
               </View>
             )}
 
-            {/* Botón Registrarse */}
+            {}
             <TouchableOpacity
               className="bg-[#1a3cff] rounded-2xl h-14 items-center justify-center mb-5"
               onPress={handleRegistro}
@@ -373,7 +371,7 @@ export default function RegistroScreen({ navigation, route }) {
               )}
             </TouchableOpacity>
 
-            {/* Ya tengo cuenta */}
+            {}
             <View className="flex-row justify-center">
               <Text className="text-gray-500 text-sm">¿Ya tienes cuenta? </Text>
               <TouchableOpacity onPress={() => navigation.navigate('Login', { rol })}>

@@ -4,12 +4,12 @@ import {
   StyleSheet, ActivityIndicator, Vibration, Animated,
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import { Audio } from 'expo-av';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import api from '../../services/api';
 
-// ─── Paraderos en orden Norte → Sur ───────────────────────────────────────────
 const PARADEROS = [
   'SANTA ROSA', 'PROC. DE LA INDEPENDENCIA', 'ACHO', 'PIZARRO - CAQUETA',
   'ALFONSO UGARTE', 'AV. BRASIL', 'AV. DEL EJERCITO', 'PARDO - MIRAFLORES',
@@ -17,17 +17,16 @@ const PARADEROS = [
   'VILLA EL SALVADOR', 'LAS PALMAS',
 ];
 
-// ─── Animación del resultado del último escaneo ───────────────────────────────
 function ResultadoBanner({ resultado, onDismiss }) {
   const slideAnim = useRef(new Animated.Value(120)).current;
 
   useEffect(() => {
     if (!resultado) return;
-    // Entra desde abajo
+    
     Animated.spring(slideAnim, {
       toValue: 0, tension: 120, friction: 10, useNativeDriver: true,
     }).start();
-    // Desaparece sola después de 3.5s
+    
     const t = setTimeout(() => {
       Animated.timing(slideAnim, {
         toValue: 120, duration: 300, useNativeDriver: true,
@@ -72,27 +71,46 @@ function ResultadoBanner({ resultado, onDismiss }) {
   );
 }
 
-// ─── Modal de selección de paradero ──────────────────────────────────────────
 function ModalParadero({ visible, paraderoActualIdx, onSeleccionar, onClose, guardando }) {
+  const [sentido, setSentido] = useState('ida');
+  const PARADEROS_LIST = sentido === 'ida' ? PARADEROS : [...PARADEROS].reverse();
+
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.modalOverlay}>
         <View style={styles.modalCard}>
-          {/* Handle */}
+          {}
           <View style={styles.handle} />
           <Text style={styles.modalTitulo}>¿En qué paradero estás?</Text>
           <Text style={styles.modalSub}>Selecciona el paradero actual del bus</Text>
 
+          <View style={{ flexDirection: 'row', marginTop: 12, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12, pading: 4 }}>
+            <TouchableOpacity 
+              style={{ flex: 1, paddingVertical: 10, alignItems: 'center', backgroundColor: sentido === 'ida' ? '#1a3cff' : 'transparent', borderRadius: 10 }}
+              onPress={() => setSentido('ida')}
+            >
+              <Text style={{ color: sentido === 'ida' ? 'white' : 'gray', fontWeight: 'bold' }}>Ida</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={{ flex: 1, paddingVertical: 10, alignItems: 'center', backgroundColor: sentido === 'vuelta' ? '#1a3cff' : 'transparent', borderRadius: 10 }}
+              onPress={() => setSentido('vuelta')}
+            >
+              <Text style={{ color: sentido === 'vuelta' ? 'white' : 'gray', fontWeight: 'bold' }}>Vuelta</Text>
+            </TouchableOpacity>
+          </View>
+
           <FlatList
-            data={PARADEROS}
+            data={PARADEROS_LIST}
             keyExtractor={(_, i) => String(i)}
             style={{ width: '100%', marginTop: 12 }}
             renderItem={({ item, index }) => {
-              const activo = index === paraderoActualIdx;
+              
+              const trueIdx = sentido === 'ida' ? index : PARADEROS.length - 1 - index;
+              const activo = trueIdx === paraderoActualIdx;
               return (
                 <TouchableOpacity
                   style={[styles.paraderoItem, activo && styles.paraderoItemActivo]}
-                  onPress={() => onSeleccionar(index)}
+                  onPress={() => onSeleccionar(trueIdx)}
                   disabled={guardando}
                 >
                   <View style={[styles.paraderoNum, activo && styles.paraderoNumActivo]}>
@@ -119,25 +137,42 @@ function ModalParadero({ visible, paraderoActualIdx, onSeleccionar, onClose, gua
   );
 }
 
-// ─── PANTALLA PRINCIPAL DEL CONDUCTOR ────────────────────────────────────────
 export default function EscanearQRScreen() {
   const insets = useSafeAreaInsets();
   const [permission, requestPermission] = useCameraPermissions();
 
-  // ── Estado de turno ────────────────────────────────────────────────────────
   const [turnoActivo,      setTurnoActivo]      = useState(false);
   const [paraderoActualIdx, setParaderoActualIdx] = useState(0);
   const [iniciandoTurno,   setIniciandoTurno]   = useState(false);
   const [guardandoParadero, setGuardandoParadero] = useState(false);
   const [showModalParadero, setShowModalParadero] = useState(false);
 
-  // ── Estado del escáner ─────────────────────────────────────────────────────
   const [escaneando,  setEscaneando]  = useState(false);
   const [camaraActiva, setCamaraActiva] = useState(true);
-  const [resultado,   setResultado]   = useState(null); // { tipo, pasajero?, mensaje? }
+  const [resultado,   setResultado]   = useState(null); 
   const procesandoRef = useRef(false);
 
-  // ── Cargar turno al enfocar la pantalla ────────────────────────────────────
+  const soundSuccessRef = useRef(null);
+  const soundErrorRef = useRef(null);
+
+  useEffect(() => {
+    async function loadSounds() {
+      try {
+        const { sound: sSuccess } = await Audio.Sound.createAsync(require('../../../../assets/sounds/success.wav'));
+        const { sound: sError } = await Audio.Sound.createAsync(require('../../../../assets/sounds/error.wav'));
+        soundSuccessRef.current = sSuccess;
+        soundErrorRef.current = sError;
+      } catch (e) {
+        console.warn('Error al cargar sonidos', e);
+      }
+    }
+    loadSounds();
+    return () => {
+      if (soundSuccessRef.current) soundSuccessRef.current.unloadAsync();
+      if (soundErrorRef.current) soundErrorRef.current.unloadAsync();
+    };
+  }, []);
+
   useFocusEffect(useCallback(() => {
     cargarTurno();
     setCamaraActiva(true);
@@ -178,7 +213,6 @@ export default function EscanearQRScreen() {
     }
   };
 
-  // ── Escáner QR ─────────────────────────────────────────────────────────────
   const handleBarCodeScanned = async ({ data }) => {
     if (procesandoRef.current || !turnoActivo) return;
     procesandoRef.current = true;
@@ -187,21 +221,22 @@ export default function EscanearQRScreen() {
     try {
       const { data: res } = await api.post('/conductor/escanear-qr', { qrCodigo: data });
       Vibration.vibrate(200);
+      if (soundSuccessRef.current) await soundSuccessRef.current.replayAsync();
       setResultado({ tipo: 'exito', pasajero: res.pasajero });
     } catch (error) {
       Vibration.vibrate([0, 100, 50, 100]);
+      if (soundErrorRef.current) await soundErrorRef.current.replayAsync();
       const msg = error.response?.data?.error || 'QR inválido o ya utilizado';
       setResultado({ tipo: 'error', mensaje: msg });
     } finally {
       setEscaneando(false);
-      // Reactivar escáner después de 2s para evitar doble escaneo
+      
       setTimeout(() => {
         procesandoRef.current = false;
       }, 2000);
     }
   };
 
-  // ── Sin permiso de cámara ──────────────────────────────────────────────────
   if (!permission) return <View style={styles.fullBlack}><ActivityIndicator color="white" /></View>;
 
   if (!permission.granted) {
@@ -217,11 +252,10 @@ export default function EscanearQRScreen() {
     );
   }
 
-  // ── UI principal ───────────────────────────────────────────────────────────
   return (
     <View style={[styles.fullBlack, { paddingTop: insets.top }]}>
 
-      {/* ── Header: paradero actual + botón cambiar ──────────────────────── */}
+      {}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Ionicons name="location" size={16} color="#4f7cff" />
@@ -251,7 +285,7 @@ export default function EscanearQRScreen() {
         )}
       </View>
 
-      {/* ── Zona de cámara ──────────────────────────────────────────────── */}
+      {}
       <View style={{ flex: 1 }}>
         {camaraActiva && (
           <CameraView
@@ -262,7 +296,7 @@ export default function EscanearQRScreen() {
           />
         )}
 
-        {/* Overlay si turno no activo */}
+        {}
         {!turnoActivo && (
           <View style={styles.overlayInactivo}>
             <MaterialCommunityIcons name="bus-clock" size={56} color="rgba(255,255,255,0.3)" />
@@ -270,7 +304,7 @@ export default function EscanearQRScreen() {
           </View>
         )}
 
-        {/* Marco de escaneo */}
+        {}
         {turnoActivo && (
           <View style={styles.marcoContainer}>
             <View style={styles.marco}>
@@ -295,13 +329,13 @@ export default function EscanearQRScreen() {
         )}
       </View>
 
-      {/* ── Banner resultado último escaneo ─────────────────────────────── */}
+      {}
       <ResultadoBanner
         resultado={resultado}
         onDismiss={() => setResultado(null)}
       />
 
-      {/* ── Modal de paraderos ───────────────────────────────────────────── */}
+      {}
       <ModalParadero
         visible={showModalParadero}
         paraderoActualIdx={paraderoActualIdx}
@@ -313,12 +347,10 @@ export default function EscanearQRScreen() {
   );
 }
 
-// ─── Estilos ──────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   fullBlack: { flex: 1, backgroundColor: '#0a0a1a' },
   center:    { alignItems: 'center', justifyContent: 'center' },
 
-  // Header
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 16, paddingVertical: 12,
@@ -332,18 +364,15 @@ const styles = StyleSheet.create({
   iniciarBtn:     { backgroundColor: '#1a3cff', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 7 },
   iniciarBtnText: { color: 'white', fontSize: 13, fontWeight: '700' },
 
-  // Overlay inactivo
   overlayInactivo: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(10,10,26,0.75)' },
   overlayText:     { color: 'rgba(255,255,255,0.5)', fontSize: 16, textAlign: 'center', marginTop: 16, lineHeight: 24 },
 
-  // Marco escaneo
   marcoContainer: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
   marco:          { width: 250, height: 250, position: 'relative' },
   esquina:        { position: 'absolute', width: 36, height: 36, borderColor: '#4f7cff', borderRadius: 4 },
   escaneandoOverlay: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.4)' },
   marcoHint:      { color: 'rgba(255,255,255,0.6)', fontSize: 14, marginTop: 20, textAlign: 'center' },
 
-  // Banner resultado
   banner:   { position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', padding: 16, marginHorizontal: 12, marginBottom: 12, borderRadius: 18 },
   bannerOk: { backgroundColor: '#052e16', borderWidth: 1.5, borderColor: '#16a34a' },
   bannerErr:{ backgroundColor: '#1f0a0a', borderWidth: 1.5, borderColor: '#dc2626' },
@@ -351,7 +380,6 @@ const styles = StyleSheet.create({
   bannerNombre: { color: 'white', fontWeight: '700', fontSize: 14 },
   bannerSub:    { color: 'rgba(255,255,255,0.55)', fontSize: 12, marginTop: 2 },
 
-  // Modal paradero
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
   modalCard: { backgroundColor: '#0f172a', borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingHorizontal: 20, paddingBottom: 32, paddingTop: 12, maxHeight: '80%' },
   handle:    { width: 40, height: 4, backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 99, alignSelf: 'center', marginBottom: 20 },
@@ -365,7 +393,6 @@ const styles = StyleSheet.create({
   cancelBtn:     { marginTop: 16, backgroundColor: 'rgba(255,255,255,0.07)', borderRadius: 16, paddingVertical: 14, alignItems: 'center' },
   cancelBtnText: { color: 'rgba(255,255,255,0.5)', fontWeight: '600' },
 
-  // Sin permiso
   permTitle: { color: 'white', fontSize: 20, fontWeight: '800', textAlign: 'center', marginTop: 20, marginBottom: 8 },
   permSub:   { color: 'rgba(255,255,255,0.5)', textAlign: 'center', marginBottom: 32 },
   permBtn:    { backgroundColor: '#1a3cff', borderRadius: 18, paddingHorizontal: 32, paddingVertical: 14 },

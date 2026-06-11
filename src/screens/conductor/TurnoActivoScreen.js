@@ -30,7 +30,6 @@ export default function TurnoActivoScreen({ navigation, route }) {
   const [toastMsg,          setToastMsg]            = useState(null);
   const scrollRef = useRef(null);
 
-  // Animación del botón principal
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -42,7 +41,6 @@ export default function TurnoActivoScreen({ navigation, route }) {
     ).start();
   }, []);
 
-  // Scroll automático al paradero actual
   useEffect(() => {
     setTimeout(() => {
       scrollRef.current?.scrollTo({ y: Math.max(0, paraderoActualIdx * 64 - 120), animated: true });
@@ -105,7 +103,7 @@ export default function TurnoActivoScreen({ navigation, route }) {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
 
-      {/* Header */}
+      {}
       <View style={styles.header}>
         <View>
           <Text style={styles.headerSub}>Turno en curso</Text>
@@ -117,7 +115,7 @@ export default function TurnoActivoScreen({ navigation, route }) {
         </View>
       </View>
 
-      {/* Lista de paraderos */}
+      {}
       <ScrollView
         ref={scrollRef}
         style={styles.listScroll}
@@ -131,12 +129,12 @@ export default function TurnoActivoScreen({ navigation, route }) {
 
           return (
             <View key={idx} style={styles.paraderoRow}>
-              {/* Línea vertical */}
+              {}
               <View style={styles.lineaContainer}>
                 {idx < PARADEROS.length - 1 && (
                   <View style={[styles.lineaVert, esPasado && styles.lineaVertActiva]} />
                 )}
-                {/* Círculo */}
+                {}
                 <View style={[
                   styles.circulo,
                   esActual && styles.circuloActual,
@@ -149,7 +147,7 @@ export default function TurnoActivoScreen({ navigation, route }) {
                 </View>
               </View>
 
-              {/* Nombre del paradero */}
+              {}
               <View style={[styles.paraderoCard, esActual && styles.paraderoCardActual]}>
                 <View style={{ flex: 1 }}>
                   <Text style={[
@@ -174,14 +172,14 @@ export default function TurnoActivoScreen({ navigation, route }) {
         <View style={{ height: 200 }} />
       </ScrollView>
 
-      {/* Toast de notificación */}
+      {}
       {toastMsg && (
         <Animated.View style={styles.toast}>
           <Text style={styles.toastText}>{toastMsg}</Text>
         </Animated.View>
       )}
 
-      {/* Botón grande "Llegué a [siguienteParadero]" */}
+      {}
       <View style={[styles.footer, { paddingBottom: insets.bottom + 16 }]}>
         {hayParaderoSiguiente && (
           <Animated.View style={{ transform: [{ scale: pulseAnim }], width: '100%' }}>
@@ -229,7 +227,6 @@ export default function TurnoActivoScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   container:   { flex: 1, backgroundColor: '#0f172a' },
 
-  // Header
   header:          { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 16 },
   headerSub:       { color: 'rgba(255,255,255,0.5)', fontSize: 11, fontWeight: '600', letterSpacing: 1.2, textTransform: 'uppercase' },
   headerTitle:     { color: 'white', fontSize: 18, fontWeight: 'bold', marginTop: 2 },
@@ -237,7 +234,6 @@ const styles = StyleSheet.create({
   activeDot:       { width: 7, height: 7, borderRadius: 99, backgroundColor: '#4ade80', marginRight: 6 },
   activeBadgeText: { color: '#4ade80', fontSize: 11, fontWeight: '700' },
 
-  // Lista
   listScroll: { flex: 1, paddingHorizontal: 20 },
   paraderoRow:   { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 4 },
   lineaContainer:{ width: 32, alignItems: 'center', paddingTop: 16 },
@@ -258,11 +254,9 @@ const styles = StyleSheet.create({
   paraderoLabelSig:   { color: 'rgba(99,129,255,0.8)', fontSize: 10, marginTop: 2 },
   paraderoNum:        { color: 'rgba(255,255,255,0.2)', fontSize: 12, fontWeight: '600', marginLeft: 8 },
 
-  // Toast
   toast:     { position: 'absolute', bottom: 200, alignSelf: 'center', backgroundColor: 'rgba(15,23,42,0.95)', borderRadius: 99, paddingHorizontal: 20, paddingVertical: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
   toastText: { color: 'white', fontWeight: '600', fontSize: 13 },
 
-  // Footer
   footer:        { backgroundColor: '#0f172a', paddingHorizontal: 20, paddingTop: 12, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.06)' },
   btnAvanzar:    { backgroundColor: '#1a3cff', borderRadius: 18, paddingVertical: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 10 },
   btnAvanzarText:{ color: 'white', fontWeight: 'bold', fontSize: 15 },
